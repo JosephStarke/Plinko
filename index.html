@@ -852,6 +852,7 @@
         let musicInterval = null;
         let musicOscillators = [];
         let isResetting = false; // Flag to prevent multiple resets
+        let gameOverTimers = []; // Store game over animation timers
         
         // Audio Context and Sounds
         let audioContext;
@@ -873,6 +874,27 @@
         const drop100xBtn = document.getElementById('drop-100x-btn');
         const gameTitle = document.getElementById('game-title');
         const gameOverlay = document.getElementById('game-overlay');
+        
+        // Stop any animations and cleanup for a fresh start
+        function stopAllAnimations() {
+            // Clear all particles
+            particles = [];
+            baseEmbers = [];
+            
+            // Clear the canvas
+            if (particlesCtx) {
+                particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            }
+            
+            // Clear any game over timers
+            if (gameOverTimers && gameOverTimers.length) {
+                gameOverTimers.forEach(id => window.clearTimeout(id));
+                gameOverTimers = [];
+            }
+            
+            // Stop continuous dropping
+            stopContinuousDrop();
+        }
         
         // Format large numbers with support for shorthand
         function formatNumber(num) {
@@ -1705,12 +1727,21 @@
                     playSizzleSound(150, 0.2, 2);
                 }
                 
+                // Clear any existing game over timers
+                gameOverTimers.forEach(id => window.clearTimeout(id));
+                gameOverTimers = [];
+                
                 // Create falling embers for end game effect
                 for (let i = 0; i < 50; i++) {
-                    setTimeout(() => {
-                        const randomBucket = Math.floor(Math.random() * config.buckets);
-                        createEmberExplosion(randomBucket);
+                    const timerId = setTimeout(() => {
+                        // Don't create more particles if we've reset the game
+                        if (!gameRunning && !isResetting) {
+                            const randomBucket = Math.floor(Math.random() * config.buckets);
+                            createEmberExplosion(randomBucket);
+                        }
                     }, i * 200);
+                    
+                    gameOverTimers.push(timerId);
                 }
             }
         }
@@ -1719,6 +1750,9 @@
             // Prevent multiple reset calls
             if (isResetting) return;
             isResetting = true;
+            
+            // Stop all animations first
+            stopAllAnimations();
             
             // Reset game state
             score = 0;
@@ -1743,9 +1777,6 @@
                 activePopup.remove();
                 activePopup = null;
             }
-            
-            // Stop any continuous dropping
-            stopContinuousDrop();
             
             // Store original canvas dimensions
             const originalWidth = canvas.width;
@@ -1800,12 +1831,169 @@
                 updateBucketDisplay();
                 
                 // Reset particles
-                particles = [];
                 initBaseEmbers();
                 
                 // Allow reset again
                 isResetting = false;
             }, 100);
+        }
+        
+        function applyConfigChanges() {
+            // Save old values
+            const oldRows = config.rows;
+            const oldColumns = config.columns;
+            const oldBuckets = config.buckets;
+            
+            // Get values from inputs
+            config.rows = parseInt(document.getElementById('rows-input').value);
+            config.columns = parseInt(document.getElementById('columns-input').value);
+            config.buckets = parseInt(document.getElementById('buckets-input').value);
+            config.ballSize = parseInt(document.getElementById('ball-size-input').value);
+            config.restitution = parseFloat(document.getElementById('restitution-input').value);
+            config.gravity = parseFloat(document.getElementById('gravity-input').value);
+            config.startingBalls = parseInt(document.getElementById('balls-input').value);
+            config.scoreLabel = document.getElementById('score-label-input').value;
+            config.gameTitle = document.getElementById('game-title-input').value;
+            
+            // Update displays
+            scoreLabel.textContent = config.scoreLabel;
+            gameTitle.textContent = config.gameTitle;
+            
+            // Set balls left to new value
+            ballsLeft = config.startingBalls;
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Update gravity
+            engine.gravity.y = config.gravity;
+            
+            // If the layout has changed, rebuild the board
+            if (oldRows !== config.rows || oldColumns !== config.columns || oldBuckets !== config.buckets) {
+                // Generate new bucket values if there's a bucket count change
+                if (oldBuckets !== config.buckets) {
+                    config.bucketValues = []; // Clear values to force regeneration
+                    generateBucketValues();
+                }
+                
+                // Stop all animations and cleanup
+                stopAllAnimations();
+                
+                resetGame();
+            } else {
+                updateBucketDisplay();
+            }
+            
+            // Close config panel
+            editMode = false;
+            configPanel.style.display = 'none';
+            editModeBtn.classList.remove('active');
+            editModeBtn.textContent = 'Edit Mode';
+            updateBucketDisplay();
+        }
+        
+        function handleResize() {
+            // Store current game state to restore after resize
+            const currentScore = score;
+            const currentBallsLeft = ballsLeft;
+            
+            // Only update dimensions, don't change the game properties
+            canvas.width = canvasContainer.offsetWidth;
+            canvas.height = canvasContainer.offsetHeight;
+            
+            particlesCanvas.width = canvasContainer.offsetWidth;
+            particlesCanvas.height = canvasContainer.offsetHeight;
+            
+            // Properly clean up the old engine
+            Matter.Engine.clear(engine);
+            Matter.Render.stop(render);
+            
+            // Set up new engine with same settings
+            engine = Matter.Engine.create({
+                enableSleeping: true
+            });
+            world = engine.world;
+            engine.gravity.y = config.gravity;
+            
+            // Update render with new engine and exact dimensions
+            render.engine = engine;
+            render.options.width = canvas.width;
+            render.options.height = canvas.height;
+            render.canvas.width = canvas.width;
+            render.canvas.height = canvas.height;
+            
+            // Set proper pixel ratio
+            Matter.Render.setPixelRatio(render, window.devicePixelRatio);
+            
+            // Restart the renderer
+            Matter.Render.run(render);
+            
+            // Start a new runner
+            const runner = Matter.Runner.create({
+                isFixed: true,
+                delta: 16
+            });
+            Matter.Runner.run(runner, engine);
+            
+            // Reconnect collision handler
+            Matter.Events.on(engine, 'collisionStart', handleCollision);
+            
+            // Reset arrays
+            pegs = [];
+            walls = [];
+            balls = [];
+            bucketBodies = [];
+            
+            // Rebuild the game elements
+            createBoundaries();
+            createPegs();
+            createBuckets();
+            
+            // Restore game state
+            score = currentScore;
+            ballsLeft = currentBallsLeft;
+            scoreDisplay.textContent = formatNumber(score);
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Reset particles
+            particles = [];
+            initBaseEmbers();
+        }
+        
+        // Prevent scrolling when touching only the game elements, but allow outside
+        function preventScrolling() {
+            const gameElements = [
+                document.querySelector('.game-container'),
+                document.getElementById('plinko-canvas'),
+                document.getElementById('particles-canvas')
+            ];
+            
+            // Add more specific touch event handling
+            gameElements.forEach(element => {
+                if (element) {
+                    element.addEventListener('touchmove', e => {
+                        // Only prevent default within the game container
+                        e.preventDefault();
+                    }, { passive: false });
+                }
+            });
+            
+            // Allow body to scroll normally
+            document.body.style.overflow = 'auto';
+            document.body.style.overscrollBehavior = 'auto';
+            
+            // Prevent double-tap zoom only within game elements
+            gameElements.forEach(element => {
+                if (element) {
+                    element.addEventListener('touchend', e => {
+                        const now = Date.now();
+                        const lastTouch = element.lastTouch || now - 1000;
+                        const delta = now - lastTouch;
+                        if (delta < 300) {
+                            e.preventDefault();
+                        }
+                        element.lastTouch = now;
+                    }, { passive: false });
+                }
+            });
         }
         
         function setupInputHandlers() {
@@ -1969,120 +2157,71 @@
             });
         }
         
-        function applyConfigChanges() {
-            // Save old values
-            const oldRows = config.rows;
-            const oldColumns = config.columns;
-            const oldBuckets = config.buckets;
-            
-            // Get values from inputs
-            config.rows = parseInt(document.getElementById('rows-input').value);
-            config.columns = parseInt(document.getElementById('columns-input').value);
-            config.buckets = parseInt(document.getElementById('buckets-input').value);
-            config.ballSize = parseInt(document.getElementById('ball-size-input').value);
-            config.restitution = parseFloat(document.getElementById('restitution-input').value);
-            config.gravity = parseFloat(document.getElementById('gravity-input').value);
-            config.startingBalls = parseInt(document.getElementById('balls-input').value);
-            config.scoreLabel = document.getElementById('score-label-input').value;
-            config.gameTitle = document.getElementById('game-title-input').value;
-            
-            // Update displays
-            scoreLabel.textContent = config.scoreLabel;
-            gameTitle.textContent = config.gameTitle;
-            
-            // Set balls left to new value
-            ballsLeft = config.startingBalls;
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Update gravity
-            engine.gravity.y = config.gravity;
-            
-            // If the layout has changed, rebuild the board
-            if (oldRows !== config.rows || oldColumns !== config.columns || oldBuckets !== config.buckets) {
-                // Generate new bucket values if there's a bucket count change
-                if (oldBuckets !== config.buckets) {
-                    config.bucketValues = []; // Clear values to force regeneration
-                    generateBucketValues();
-                }
-                resetGame();
-            } else {
-                updateBucketDisplay();
+        function updateParticles() {
+            // Don't update particles during reset
+            if (isResetting) {
+                // Request another frame when not resetting
+                requestAnimationFrame(updateParticles);
+                return;
             }
             
-            // Close config panel
-            editMode = false;
-            configPanel.style.display = 'none';
-            editModeBtn.classList.remove('active');
-            editModeBtn.textContent = 'Edit Mode';
-            updateBucketDisplay();
-        }
-        
-        function handleResize() {
-            // Store current game state to restore after resize
-            const currentScore = score;
-            const currentBallsLeft = ballsLeft;
+            // Clear canvas
+            particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
             
-            // Only update dimensions, don't change the game properties
-            canvas.width = canvasContainer.offsetWidth;
-            canvas.height = canvasContainer.offsetHeight;
+            // Update and draw base embers
+            for (let i = 0; i < baseEmbers.length; i++) {
+                const ember = baseEmbers[i];
+                
+                ember.x += ember.velocity.x;
+                ember.y += ember.velocity.y;
+                ember.life++;
+                
+                // If ember is dead, reset it at the bottom
+                if (ember.life >= ember.maxLife) {
+                    ember.x = Math.random() * canvas.width;
+                    ember.y = canvas.height - Math.random() * 10;
+                    ember.velocity.y = -0.5 - Math.random() * 1.5;
+                    ember.life = 0;
+                    ember.maxLife = 100 + Math.random() * 100;
+                }
+                
+                // Calculate alpha based on life
+                const alpha = 1 - ember.life / ember.maxLife;
+                
+                // Draw ember
+                particlesCtx.beginPath();
+                particlesCtx.arc(ember.x, ember.y, ember.radius, 0, Math.PI * 2);
+                particlesCtx.fillStyle = ember.color.replace(/[\d\.]+\)$/g, `${alpha})`);
+                particlesCtx.fill();
+            }
             
-            particlesCanvas.width = canvasContainer.offsetWidth;
-            particlesCanvas.height = canvasContainer.offsetHeight;
+            // Update and draw explosion particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                p.x += p.velocity.x;
+                p.y += p.velocity.y;
+                p.velocity.y += p.gravity || 0.15; // Stronger gravity for faster fall
+                p.life++;
+                
+                // Remove dead particles
+                if (p.life >= p.maxLife) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+                
+                // Calculate alpha based on life
+                const alpha = 1 - p.life / p.maxLife;
+                
+                // Draw particle
+                particlesCtx.beginPath();
+                particlesCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                particlesCtx.fillStyle = p.color.replace(/[\d\.]+\)$/g, `${alpha})`);
+                particlesCtx.fill();
+            }
             
-            // Properly clean up the old engine
-            Matter.Engine.clear(engine);
-            Matter.Render.stop(render);
-            
-            // Set up new engine with same settings
-            engine = Matter.Engine.create({
-                enableSleeping: true
-            });
-            world = engine.world;
-            engine.gravity.y = config.gravity;
-            
-            // Update render with new engine and exact dimensions
-            render.engine = engine;
-            render.options.width = canvas.width;
-            render.options.height = canvas.height;
-            render.canvas.width = canvas.width;
-            render.canvas.height = canvas.height;
-            
-            // Set proper pixel ratio
-            Matter.Render.setPixelRatio(render, window.devicePixelRatio);
-            
-            // Restart the renderer
-            Matter.Render.run(render);
-            
-            // Start a new runner
-            const runner = Matter.Runner.create({
-                isFixed: true,
-                delta: 16
-            });
-            Matter.Runner.run(runner, engine);
-            
-            // Reconnect collision handler
-            Matter.Events.on(engine, 'collisionStart', handleCollision);
-            
-            // Reset arrays
-            pegs = [];
-            walls = [];
-            balls = [];
-            bucketBodies = [];
-            
-            // Rebuild the game elements
-            createBoundaries();
-            createPegs();
-            createBuckets();
-            
-            // Restore game state
-            score = currentScore;
-            ballsLeft = currentBallsLeft;
-            scoreDisplay.textContent = formatNumber(score);
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Reset particles
-            particles = [];
-            initBaseEmbers();
+            // Continue animation loop
+            requestAnimationFrame(updateParticles);
         }
         
         // Initialize base embers
@@ -2169,88 +2308,6 @@
                     alphaFade: 0.03 + Math.random() * 0.05
                 });
             }
-        }
-        
-        function updateParticles() {
-            // Clear canvas
-            particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
-            
-            // Update and draw base embers
-            for (let i = 0; i < baseEmbers.length; i++) {
-                const ember = baseEmbers[i];
-                
-                ember.x += ember.velocity.x;
-                ember.y += ember.velocity.y;
-                ember.life++;
-                
-                // If ember is dead, reset it at the bottom
-                if (ember.life >= ember.maxLife) {
-                    ember.x = Math.random() * canvas.width;
-                    ember.y = canvas.height - Math.random() * 10;
-                    ember.velocity.y = -0.5 - Math.random() * 1.5;
-                    ember.life = 0;
-                    ember.maxLife = 100 + Math.random() * 100;
-                }
-                
-                // Calculate alpha based on life
-                const alpha = 1 - ember.life / ember.maxLife;
-                
-                // Draw ember
-                particlesCtx.beginPath();
-                particlesCtx.arc(ember.x, ember.y, ember.radius, 0, Math.PI * 2);
-                particlesCtx.fillStyle = ember.color.replace(/[\d\.]+\)$/g, `${alpha})`);
-                particlesCtx.fill();
-            }
-            
-            // Update and draw explosion particles
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                
-                p.x += p.velocity.x;
-                p.y += p.velocity.y;
-                p.velocity.y += p.gravity || 0.15; // Stronger gravity for faster fall
-                p.life++;
-                
-                // Remove dead particles
-                if (p.life >= p.maxLife) {
-                    particles.splice(i, 1);
-                    continue;
-                }
-                
-                // Calculate alpha based on life
-                const alpha = 1 - p.life / p.maxLife;
-                
-                // Draw particle
-                particlesCtx.beginPath();
-                particlesCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                particlesCtx.fillStyle = p.color.replace(/[\d\.]+\)$/g, `${alpha})`);
-                particlesCtx.fill();
-            }
-            
-            // Continue animation loop
-            requestAnimationFrame(updateParticles);
-        }
-        
-        // Prevent scrolling when touching the game container and canvas on mobile
-        function preventScrolling() {
-            const preventDefault = e => {
-                e.preventDefault();
-            };
-            
-            document.querySelector('.game-container').addEventListener('touchmove', preventDefault, { passive: false });
-            document.getElementById('plinko-canvas').addEventListener('touchmove', preventDefault, { passive: false });
-            document.getElementById('particles-canvas').addEventListener('touchmove', preventDefault, { passive: false });
-            
-            // Also prevent double-tap zoom
-            document.addEventListener('touchend', e => {
-                const now = Date.now();
-                const lastTouch = document.lastTouch || now - 1000;
-                const delta = now - lastTouch;
-                if (delta < 300) {
-                    e.preventDefault();
-                }
-                document.lastTouch = now;
-            }, { passive: false });
         }
         
         // Initialize game when window is loaded
