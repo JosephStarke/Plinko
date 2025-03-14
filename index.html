@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLINKO BURN</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #2C1B18;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            background-image: linear-gradient(to bottom, #3B1D15, #2C1B18);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            color: #FF6B35;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.8), 4px 4px 0px #7A1C00;
+            text-align: center;
+            letter-spacing: 2px;
+            transform: rotate(-2deg);
+        }
+        
+        .creator-credit {
+            font-size: 1rem;
+            color: #FFA15A;
+            text-align: center;
+            margin-bottom: 15px;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .game-container {
+            position: relative;
+            width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #3B2723;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 107, 53, 0.3);
+            padding: 20px;
+            border: 5px solid #4A2F2A;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .score, .balls-left {
+            font-size: 1.5rem;
+            background-color: #2A1A15;
+            padding: 10px 20px;
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 107, 53, 0.3);
+            font-weight: bold;
+            transition: all 0.5s ease;
+        }
+        
+        .score.game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            padding: 30px 40px;
+            background-color: rgba(42, 26, 21, 0.9);
+            border: 5px solid #FF6B35;
+            z-index: 100;
+            width: 80%;
+            text-align: center;
+            animation: flameFlicker 2s infinite alternate;
+        }
+        
+        @keyframes flameFlicker {
+            0% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.6); }
+            100% { box-shadow: 0 0 40px rgba(255, 107, 53, 0.9); }
+        }
+
+        .score span, .balls-left span {
+            color: #FF8C5A;
+            font-weight: bold;
+        }
+        
+        .drop-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        #config-panel {
+            width: 100%;
+            background-color: #2A1A15;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 107, 53, 0.2);
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-item label {
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: #FF8C5A;
+        }
+
+        .config-item input, .config-item select, .config-item textarea {
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #4A2F2A;
+            background-color: #3A2520;
+            color: white;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+        }
+
+        .config-item input:focus, .config-item select:focus, .config-item textarea:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.6);
+        }
+
+        .action-btn {
+            margin-top: 5px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 15px;
+            background-color: #FF6B35;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            font-size: 1.1rem;
+            box-shadow: 0px 4px 0px #7A1C00, 0px 6px 10px rgba(0, 0, 0, 0.4);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        .action-btn:hover {
+            background-color: #FF8C5A;
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 0px #7A1C00, 0px 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0px 2px 0px #7A1C00, 0px 4px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .edit-mode {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 15px;
+            background-color: #2196F3;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            font-size: 1.1rem;
+            box-shadow: 0px 4px 0px #0B5394, 0px 6px 10px rgba(0, 0, 0, 0.4);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        .edit-mode:hover {
+            background-color: #4DABF5;
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 0px #0B5394, 0px 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .edit-mode:active {
+            transform: translateY(2px);
+            box-shadow: 0px 2px 0px #0B5394, 0px 4px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .edit-mode.active {
+            background-color: #F44336;
+            box-shadow: 0px 4px 0px #B71C1C, 0px 6px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .edit-mode.active:hover {
+            background-color: #FF5252;
+            box-shadow: 0px 6px 0px #B71C1C, 0px 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 107, 53, 0.2);
+            background-color: #241914;
+        }
+
+        canvas {
+            display: block;
+            background-color: transparent;
+        }
+
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #drop-zones {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .drop-zone {
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 107, 53, 0.3);
+            border: 2px solid #FF6B35;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        .drop-zone:hover {
+            background-color: rgba(255, 107, 53, 0.6);
+            transform: scale(1.1);
+        }
+
+        .buckets {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+
+        .bucket {
+            width: 60px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #FFD700;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .bucket-hole {
+            width: 50px;
+            height: 10px;
+            background-color: transparent;
+            border-bottom: 3px solid #FF6B35;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.4);
+        }
+
+        .bucket-hole::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background-color: rgba(255, 107, 53, 0.5);
+            bottom: -3px;
+            left: 0;
+            filter: blur(2px);
+        }
+
+        .bucket-label {
+            position: absolute;
+            bottom: 30px;
+            color: #FFA15A;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            font-size: 1rem;
+            text-align: center;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .bucket:hover {
+            transform: scale(1.05);
+        }
+
+        .bucket.edit-bucket:hover .bucket-label {
+            color: #4DABF5;
+            text-decoration: underline;
+        }
+
+        .color-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .color-option:hover {
+            transform: scale(1.2);
+            border-color: white;
+        }
+
+        .glow {
+            animation: glow 0.5s ease-in-out;
+        }
+
+        @keyframes glow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5) drop-shadow(0 0 10px #FF6B35); }
+            100% { filter: brightness(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Updated score popup animations for middle and surrounding buckets */
+        @keyframes centerScorePopup {
+            0% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.9)); }
+            50% { transform: translateY(-60px) scale(1.7); opacity: 0.8; filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.8)); }
+            80% { transform: translateY(-80px) scale(2.2); opacity: 0.5; filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.7)); }
+            100% { transform: translateY(-100px) scale(2.5); opacity: 0; filter: drop-shadow(0 0 30px rgba(255, 107, 53, 0.5)); }
+        }
+
+        @keyframes adjacentScorePopup {
+            0% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.8)); }
+            50% { transform: translateY(-50px) scale(1.4); opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.7)); }
+            80% { transform: translateY(-70px) scale(1.7); opacity: 0.4; filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6)); }
+            100% { transform: translateY(-80px) scale(1.9); opacity: 0; filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.4)); }
+        }
+
+        @keyframes regularScorePopup {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-25px) scale(1.1); opacity: 0.6; }
+            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+        }
+
+        .score-popup.center {
+            animation: centerScorePopup 2s forwards;
+            color: #FFD700;
+            font-size: 1.8rem;
+            z-index: 25;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        .score-popup.adjacent {
+            animation: adjacentScorePopup 1.75s forwards;
+            color: #FFA500;
+            font-size: 1.6rem;
+            z-index: 24;
+            text-shadow: 0 0 8px rgba(255, 165, 0, 0.6);
+        }
+
+        .score-popup.regular {
+            animation: regularScorePopup 1s forwards;
+            font-size: 1.4rem;
+        }
+
+        /* Bucket hole glow effects */
+        @keyframes bucketGlowCenter {
+            0% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.7); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.9), 0 0 40px rgba(255, 107, 53, 0.6); }
+            100% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.7); }
+        }
+
+        @keyframes bucketGlowAdjacent {
+            0% { box-shadow: 0 0 8px rgba(255, 107, 53, 0.6); }
+            50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 107, 53, 0.5); }
+            100% { box-shadow: 0 0 8px rgba(255, 107, 53, 0.6); }
+        }
+
+        @keyframes bucketGlowRegular {
+            0% { box-shadow: 0 0 5px rgba(255, 107, 53, 0.4); }
+            50% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.6); }
+            100% { box-shadow: 0 0 5px rgba(255, 107, 53, 0.4); }
+        }
+
+        .bucket-hole.glow-center {
+            animation: bucketGlowCenter 2s ease-in-out;
+        }
+
+        .bucket-hole.glow-adjacent {
+            animation: bucketGlowAdjacent 1.75s ease-in-out;
+        }
+
+        .bucket-hole.glow-regular {
+            animation: bucketGlowRegular 1s ease-in-out;
+        }
+
+        .bucket-edit-popup {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2A1A15;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border: 2px solid #4A2F2A;
+        }
+
+        .bucket-edit-popup input {
+            background-color: #3A2520;
+            border: 1px solid #4A2F2A;
+            border-radius: 5px;
+            color: white;
+            padding: 5px;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+        }
+
+        .bucket-edit-popup button {
+            background-color: #FF6B35;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+        }
+
+        .bucket-edit-popup button:hover {
+            background-color: #FF8C5A;
+        }
+
+        .editor-help {
+            color: #FF8C5A;
+            margin-top: 10px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .bottom-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .sound-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle-label {
+            color: #FFA15A;
+            font-size: 1.1rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3A2520;
+            border: 2px solid #4A2F2A;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 2px;
+            background-color: #FF6B35;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #2A1A15;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        @keyframes ember {
+            0% { opacity: 0.8; transform: translateY(0) scale(1); }
+            50% { opacity: 0.6; transform: translateY(-15px) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-30px) scale(0.2); }
+        }
+
+        .ember-explosion {
+            position: absolute;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        /* Sound visualization */
+        .sound-wave {
+            display: flex;
+            align-items: center;
+            height: 20px;
+            gap: 3px;
+        }
+        
+        .sound-bar {
+            width: 3px;
+            background-color: #FF6B35;
+            border-radius: 3px;
+            animation: soundWave 1s infinite ease-in-out alternate;
+            animation-delay: calc(var(--i) * 0.1s);
+        }
+        
+        @keyframes soundWave {
+            0% { height: 5px; }
+            100% { height: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="game-title">PLINKO BURN</h1>
+    <div class="creator-credit">By Jozzuph</div>
+    
+    <div class="game-container">
+        <div class="stats">
+            <div class="score"><span id="score-label">$SHIRO Burned</span>: <span id="score-display">0</span></div>
+            <div class="balls-left">Balls: <span id="balls-left-display">10</span></div>
+        </div>
+        
+        <div class="drop-buttons">
+            <button id="drop-btn" class="action-btn">Drop Ball</button>
+            <button id="drop-5x-btn" class="action-btn">Drop 5x</button>
+            <button id="drop-10x-btn" class="action-btn">Drop 10x</button>
+            <button id="drop-50x-btn" class="action-btn">Drop 50x</button>
+            <button id="drop-100x-btn" class="action-btn">Drop 100x</button>
+        </div>
+        
+        <div id="canvas-container">
+            <canvas id="plinko-canvas"></canvas>
+            <canvas id="particles-canvas"></canvas>
+            <div class="buckets" id="buckets-container"></div>
+            <div class="game-overlay" id="game-overlay"></div>
+        </div>
+        
+        <div class="bottom-controls">
+            <button id="reset-btn" class="action-btn">Reset Game</button>
+            <button id="edit-mode-btn" class="edit-mode">Edit Mode</button>
+        </div>
+        
+        <div class="sound-controls">
+            <div class="toggle-container">
+                <span class="toggle-label">Sound FX</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div id="config-panel">
+            <div class="editor-help">Tip: Click directly on bucket values to edit them when in Edit Mode!</div>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label for="rows-input">Rows of Pegs</label>
+                    <input type="number" id="rows-input" min="5" max="15" value="8">
+                </div>
+                <div class="config-item">
+                    <label for="columns-input">Columns of Pegs</label>
+                    <input type="number" id="columns-input" min="5" max="20" value="11">
+                </div>
+                <div class="config-item">
+                    <label for="buckets-input">Number of Buckets</label>
+                    <input type="number" id="buckets-input" min="5" max="15" value="15">
+                </div>
+                <div class="config-item">
+                    <label for="ball-size-input">Ball Size</label>
+                    <input type="number" id="ball-size-input" min="5" max="15" value="10">
+                </div>
+                <div class="config-item">
+                    <label for="restitution-input">Peg Bounciness</label>
+                    <input type="number" id="restitution-input" min="0" max="1" step="0.1" value="0.5">
+                </div>
+                <div class="config-item">
+                    <label for="gravity-input">Gravity</label>
+                    <input type="number" id="gravity-input" min="0.1" max="2" step="0.1" value="1">
+                </div>
+                <div class="config-item">
+                    <label for="balls-input">Starting Balls</label>
+                    <input type="number" id="balls-input" min="1" value="10">
+                </div>
+                <div class="config-item">
+                    <label for="score-label-input">Score Label</label>
+                    <input type="text" id="score-label-input" value="$SHIRO Burned">
+                </div>
+                <div class="config-item">
+                    <label for="game-title-input">Game Title</label>
+                    <input type="text" id="game-title-input" value="PLINKO BURN">
+                </div>
+                <div class="config-item">
+                    <label for="peg-color">Peg Color</label>
+                    <div class="color-picker" id="peg-color-picker">
+                        <div class="color-option" style="background-color: #FF6B35;" data-color="#FF6B35"></div>
+                        <div class="color-option" style="background-color: #FFC15E;" data-color="#FFC15E"></div>
+                        <div class="color-option" style="background-color: #FF8C5A;" data-color="#FF8C5A"></div>
+                        <div class="color-option" style="background-color: #FF5151;" data-color="#FF5151"></div>
+                        <div class="color-option" style="background-color: #FFD700;" data-color="#FFD700"></div>
+                    </div>
+                </div>
+                <div class="config-item">
+                    <label for="ball-color">Ball Color</label>
+                    <div class="color-picker" id="ball-color-picker">
+                        <div class="color-option" style="background-color: #FFEB3B;" data-color="#FFEB3B"></div>
+                        <div class="color-option" style="background-color: #FFD54F;" data-color="#FFD54F"></div>
+                        <div class="color-option" style="background-color: #FFCC80;" data-color="#FFCC80"></div>
+                        <div class="color-option" style="background-color: #FFF59D;" data-color="#FFF59D"></div>
+                        <div class="color-option" style="background-color: #FFF176;" data-color="#FFF176"></div>
+                    </div>
+                </div>
+            </div>
+            <button id="apply-btn" class="action-btn" style="margin-top: 15px;">Apply Changes</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <script>
+        // Game Configuration
+        const config = {
+            rows: 18,
+            columns: 12,
+            buckets: 15,
+            pegSize: 6,
+            ballSize: 5,
+            ballDensity: 0.3,
+            restitution: 0.5,
+            friction: 0.1,
+            gravity: 1.3,
+            startingBalls: 50,
+            pegColor: '#FF6B35',
+            ballColor: '#FFEB3B',
+            bucketValues: [],
+            scoreLabel: '$SHIRO Burned',
+            gameTitle: 'PLINKO BURN',
+            dropSpeed: 100, // ms between ball drops for multi-drop
+            soundEnabled: true,
+            particleIntensity: 1.0 // Multiplier for particle amount
+        };
+
+        // Game State
+        let score = 0;
+        let ballsLeft = config.startingBalls;
+        let gameRunning = true;
+        let editMode = false;
+        let engine, render, world, canvas, particlesCanvas, particlesCtx;
+        let pegs = [], walls = [], balls = [], bucketBodies = [];
+        let dropInterval = null;
+        let activePopup = null;
+        let particles = [];
+        let baseEmbers = [];
+        let musicInterval = null;
+        let musicOscillators = [];
+        
+        // Audio Context and Sounds
+        let audioContext;
+        
+        // DOM Elements
+        const canvasContainer = document.getElementById('canvas-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreLabel = document.getElementById('score-label');
+        const ballsLeftDisplay = document.getElementById('balls-left-display');
+        const editModeBtn = document.getElementById('edit-mode-btn');
+        const configPanel = document.getElementById('config-panel');
+        const applyBtn = document.getElementById('apply-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const bucketsContainer = document.getElementById('buckets-container');
+        const dropBtn = document.getElementById('drop-btn');
+        const drop5xBtn = document.getElementById('drop-5x-btn');
+        const drop10xBtn = document.getElementById('drop-10x-btn');
+        const drop50xBtn = document.getElementById('drop-50x-btn');
+        const drop100xBtn = document.getElementById('drop-100x-btn');
+        const gameTitle = document.getElementById('game-title');
+        
+        // Format large numbers with support for shorthand
+        function formatNumber(num) {
+            if (num >= 1e12) {
+                return (num / 1e12).toFixed(1) + 'T';
+            } else if (num >= 1e9) {
+                return (num / 1e9).toFixed(1) + 'B';
+            } else if (num >= 1e6) {
+                return (num / 1e6).toFixed(1) + 'M';
+            } else if (num >= 1e3) {
+                return (num / 1e3).toFixed(1) + 'K';
+            } else {
+                return num.toString();
+            }
+        }
+
+        // Parse shorthand numbers like "1T" to their numeric value
+        function parseShorthandNumber(str) {
+            str = str.trim().toUpperCase();
+            
+            // Regular number
+            if (!isNaN(str)) {
+                return parseFloat(str);
+            }
+            
+            // Shorthand notation
+            const value = parseFloat(str);
+            if (isNaN(value)) return 0;
+            
+            const unit = str.replace(/[0-9.]/g, '').trim();
+            
+            switch (unit) {
+                case 'K': return value * 1e3;
+                case 'M': return value * 1e6;
+                case 'B': return value * 1e9;
+                case 'T': return value * 1e12;
+                default: return value;
+            }
+        }
+
+        function initGame() {
+            // Initialize audio context
+            initAudio();
+            
+            // Set up Matter.js
+            engine = Matter.Engine.create({
+                enableSleeping: true
+            });
+            world = engine.world;
+            engine.gravity.y = config.gravity;
+            
+            canvas = document.getElementById('plinko-canvas');
+            canvas.width = canvasContainer.offsetWidth;
+            canvas.height = canvasContainer.offsetHeight;
+            
+            // Initialize particles canvas
+            particlesCanvas = document.getElementById('particles-canvas');
+            particlesCanvas.width = canvasContainer.offsetWidth;
+            particlesCanvas.height = canvasContainer.offsetHeight;
+            particlesCtx = particlesCanvas.getContext('2d');
+            
+            render = Matter.Render.create({
+                canvas: canvas,
+                engine: engine,
+                options: {
+                    width: canvas.width,
+                    height: canvas.height,
+                    wireframes: false,
+                    background: 'transparent',
+                    showSleeping: false,
+                    showAngleIndicator: false
+                }
+            });
+            
+            Matter.Render.run(render);
+            
+            // Set initial values
+            scoreLabel.textContent = config.scoreLabel;
+            gameTitle.textContent = config.gameTitle;
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Create physics world
+            createBoundaries();
+            createPegs();
+            createBuckets();
+            
+            // Start the engine
+            const runner = Matter.Runner.create({
+                isFixed: true, 
+                delta: 16  // target 60fps
+            });
+            Matter.Runner.run(runner, engine);
+            
+            // Event listeners
+            Matter.Events.on(engine, 'collisionStart', handleCollision);
+            window.addEventListener('resize', handleResize);
+            
+            // Input events
+            setupInputHandlers();
+            
+            // Generate bucket values
+            generateBucketValues();
+            updateBucketDisplay();
+            
+            // Initialize base embers
+            initBaseEmbers();
+            
+            // Start animation frame loop for particles
+            requestAnimationFrame(updateParticles);
+        }
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.warn('AudioContext not supported');
+            }
+        }
+        
+        function createBoundaries() {
+            const wallOptions = { 
+                isStatic: true,
+                render: { 
+                    fillStyle: '#3B2723',
+                    strokeStyle: '#4A2F2A',
+                    lineWidth: 1
+                }
+            };
+            
+            // Get current canvas dimensions to ensure proper alignment
+            const currentWidth = canvas.width;
+            
+            // Left wall (positioned slightly off-screen)
+            walls.push(Matter.Bodies.rectangle(
+                -10, canvas.height / 2, 
+                20, canvas.height,
+                wallOptions
+            ));
+            
+            // Right wall (ensuring proper alignment using current width)
+            walls.push(Matter.Bodies.rectangle(
+                currentWidth + 10, canvas.height / 2, 
+                20, canvas.height,
+                wallOptions
+            ));
+            
+            // Add walls to world
+            Matter.Composite.add(world, walls);
+        }
+        
+        function createPegs() {
+            const pegOptions = {
+                isStatic: true,
+                render: {
+                    fillStyle: config.pegColor,
+                    strokeStyle: '#FFF',
+                    lineWidth: 1
+                },
+                restitution: config.restitution,
+                friction: config.friction,
+                chamfer: { radius: 2 }
+            };
+            
+            const spacing = canvas.width / (config.columns + 1);
+            const verticalSpacing = (canvas.height - 200) / (config.rows + 1);
+            const startY = 80; // Start lower to leave room at top
+            
+            for (let row = 0; row < config.rows; row++) {
+                const offsetX = row % 2 === 0 ? 0 : spacing / 2;
+                const numPegsInRow = row % 2 === 0 ? config.columns : config.columns - 1;
+                
+                for (let col = 0; col < numPegsInRow; col++) {
+                    const peg = Matter.Bodies.circle(
+                        offsetX + spacing * (col + 1),
+                        startY + verticalSpacing * (row + 1),
+                        config.pegSize,
+                        pegOptions
+                    );
+                    
+                    // Give peg a reference to its original color
+                    peg.originalColor = config.pegColor;
+                    
+                    pegs.push(peg);
+                }
+            }
+            
+            // Add pegs to world
+            Matter.Composite.add(world, pegs);
+        }
+        
+        function createBuckets() {
+            const bucketWidth = canvas.width / config.buckets;
+            const bucketHeight = 100;
+            const bucketY = canvas.height - bucketHeight / 2;
+            
+            // Clear existing buckets
+            bucketsContainer.innerHTML = '';
+            bucketBodies = [];
+            
+            // Create bucket visuals and physics
+            for (let i = 0; i < config.buckets; i++) {
+                // Create bucket visual (now a hole)
+                const bucket = document.createElement('div');
+                bucket.className = 'bucket';
+                bucket.dataset.index = i;
+                
+                // Create bucket hole visual
+                const bucketHole = document.createElement('div');
+                bucketHole.className = 'bucket-hole';
+                
+                // Create label for value
+                const bucketLabel = document.createElement('div');
+                bucketLabel.className = 'bucket-label';
+                bucketLabel.textContent = formatNumber(config.bucketValues[i] || 0);
+                
+                bucket.appendChild(bucketHole);
+                bucket.appendChild(bucketLabel);
+                bucketsContainer.appendChild(bucket);
+                
+                // Create bucket walls (invisible for visual style)
+                const leftWall = Matter.Bodies.rectangle(
+                    i * bucketWidth, 
+                    bucketY - 10,
+                    5, 
+                    bucketHeight - 20,
+                    { 
+                        isStatic: true,
+                        render: { 
+                            visible: false
+                        },
+                        chamfer: { radius: 2 }
+                    }
+                );
+                
+                // Only add right wall for the last bucket
+                if (i === config.buckets - 1) {
+                    const rightWall = Matter.Bodies.rectangle(
+                        (i + 1) * bucketWidth, 
+                        bucketY - 10, 
+                        5, 
+                        bucketHeight - 20,
+                        { 
+                            isStatic: true,
+                            render: { 
+                                visible: false
+                            },
+                            chamfer: { radius: 2 }
+                        }
+                    );
+                    bucketBodies.push(rightWall);
+                }
+                
+                // Create bucket bottom sensor for scoring
+                const bucketSensor = Matter.Bodies.rectangle(
+                    i * bucketWidth + bucketWidth / 2,
+                    canvas.height - 5,
+                    bucketWidth - 5,
+                    10,
+                    { 
+                        isStatic: true,
+                        isSensor: true,
+                        render: { 
+                            visible: false
+                        },
+                        bucketIndex: i
+                    }
+                );
+                
+                bucketBodies.push(leftWall, bucketSensor);
+            }
+            
+            // Add buckets to world
+            Matter.Composite.add(world, bucketBodies);
+        }
+        
+        function dropBall() {
+            if (ballsLeft <= 0 || !gameRunning) return;
+            
+            // Random position along the top
+            const x = Math.random() * (canvas.width - 100) + 50;
+            const y = 40;
+            
+            const ball = Matter.Bodies.circle(x, y, config.ballSize, {
+                restitution: config.restitution,
+                friction: config.friction,
+                density: config.ballDensity,
+                frictionAir: 0.02,
+                render: {
+                    fillStyle: config.ballColor,
+                    strokeStyle: '#FFF',
+                    lineWidth: 1
+                }
+            });
+            
+            Matter.Composite.add(world, ball);
+            balls.push(ball);
+            
+            // Decrease balls left
+            ballsLeft--;
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Play sound
+            playBallDropSound();
+            
+            // Check if game is over
+            if (ballsLeft === 0 && balls.length === 0) {
+                setTimeout(checkGameOver, 5000);
+            }
+        }
+        
+        function dropMultipleBalls(count) {
+            const maxCount = Math.min(count, ballsLeft);
+            if (maxCount <= 0) return;
+            
+            let dropped = 0;
+            
+            const dropNext = () => {
+                if (dropped < maxCount && gameRunning) {
+                    dropBall();
+                    dropped++;
+                    setTimeout(dropNext, config.dropSpeed);
+                }
+            };
+            
+            dropNext();
+        }
+        
+        function startContinuousDrop() {
+            if (dropInterval) return;
+            
+            dropBall(); // Drop first ball immediately
+            
+            dropInterval = setInterval(() => {
+                if (ballsLeft > 0 && gameRunning) {
+                    dropBall();
+                } else {
+                    stopContinuousDrop();
+                }
+            }, 200); // Drop a ball every 200ms
+        }
+        
+        function stopContinuousDrop() {
+            if (dropInterval) {
+                clearInterval(dropInterval);
+                dropInterval = null;
+            }
+        }
+        
+        function generateBucketValues() {
+            // If bucket values already exist, don't regenerate
+            if (config.bucketValues.length === config.buckets) {
+                return;
+            }
+            
+            // Check if bucket values were manually set
+            const bucketValuesInput = document.getElementById('bucket-values-input');
+            if (bucketValuesInput && bucketValuesInput.value.trim()) {
+                try {
+                    const values = bucketValuesInput.value.split(',').map(v => {
+                        const parsed = parseInt(v.trim());
+                        return isNaN(parsed) ? 0 : parsed;
+                    });
+                    
+                    // If we have enough values, use them
+                    if (values.length >= config.buckets) {
+                        config.bucketValues = values.slice(0, config.buckets);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Error parsing bucket values", e);
+                }
+            }
+            
+            config.bucketValues = [];
+            
+            // Set middle bucket to 50B
+            const middleIndex = Math.floor((config.buckets - 1) / 2);
+            const middleValue = 50 * 1e9; // 50B
+            
+            // Generate symmetrical values
+            for (let i = 0; i < config.buckets; i++) {
+                const distFromCenter = Math.abs(i - middleIndex);
+                
+                if (distFromCenter === 0) {
+                    // Center bucket
+                    config.bucketValues[i] = middleValue;
+                } else {
+                    // Calculate decreasing values outward (exponential decay)
+                    const ratio = Math.pow(0.7, distFromCenter);
+                    const value = Math.round(middleValue * ratio);
+                    config.bucketValues[i] = value;
+                }
+            }
+        }
+        
+        function updateBucketDisplay() {
+            const buckets = document.querySelectorAll('.bucket');
+            
+            buckets.forEach((bucket, index) => {
+                const label = bucket.querySelector('.bucket-label');
+                if (label) {
+                    label.textContent = formatNumber(config.bucketValues[index]);
+                }
+                
+                // Add or remove edit-bucket class based on edit mode
+                if (editMode) {
+                    bucket.classList.add('edit-bucket');
+                } else {
+                    bucket.classList.remove('edit-bucket');
+                }
+            });
+        }
+        
+        function showBucketEditPopup(bucket) {
+            // If another popup is open, close it
+            if (activePopup) {
+                activePopup.remove();
+            }
+            
+            const bucketIndex = parseInt(bucket.dataset.index);
+            const currentValue = config.bucketValues[bucketIndex];
+            
+            const popup = document.createElement('div');
+            popup.className = 'bucket-edit-popup';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = formatNumber(currentValue);
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    saveBucketValue();
+                }
+            });
+            
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Save';
+            saveBtn.addEventListener('click', saveBucketValue);
+            
+            popup.appendChild(input);
+            popup.appendChild(saveBtn);
+            bucket.appendChild(popup);
+            
+            // Set as active popup
+            activePopup = popup;
+            
+            // Focus input
+            setTimeout(() => {
+                input.focus();
+                input.select();
+            }, 10);
+            
+            function saveBucketValue() {
+                const newValue = parseShorthandNumber(input.value);
+                config.bucketValues[bucketIndex] = newValue;
+                updateBucketDisplay();
+                popup.remove();
+                activePopup = null;
+            }
+            
+            // Close when clicking outside
+            const closeOnOutsideClick = e => {
+                if (!popup.contains(e.target) && e.target !== bucket) {
+                    popup.remove();
+                    activePopup = null;
+                    document.removeEventListener('click', closeOnOutsideClick);
+                }
+            };
+            
+            // Add event listener with a slight delay to prevent immediate closing
+            setTimeout(() => {
+                document.addEventListener('click', closeOnOutsideClick);
+            }, 10);
+        }
+        
+        function handleCollision(event) {
+            const pairs = event.pairs;
+            
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i];
+                
+                // Check if a ball hit a peg
+                if (pegs.includes(pair.bodyA) || pegs.includes(pair.bodyB)) {
+                    const peg = pegs.includes(pair.bodyA) ? pair.bodyA : pair.bodyB;
+                    const ball = pegs.includes(pair.bodyA) ? pair.bodyB : pair.bodyA;
+                    
+                    // Skip if the peg is already flashing
+                    if (peg.isFlashing) continue;
+                    
+                    // Mark peg as flashing to prevent multiple triggers
+                    peg.isFlashing = true;
+                    
+                    // Visual feedback
+                    const originalFill = peg.originalColor;
+                    peg.render.fillStyle = '#FFFFFF';
+                    
+                    // Get collision velocity for sound pitch
+                    const velocity = Math.sqrt(
+                        Math.pow(ball.velocity.x, 2) + 
+                        Math.pow(ball.velocity.y, 2)
+                    );
+                    
+                    // Play sound based on velocity
+                    playPegHitSound(200 + velocity * 100);
+                    
+                    // Reset color after a short delay
+                    setTimeout(() => {
+                        peg.render.fillStyle = originalFill;
+                        peg.isFlashing = false;
+                    }, 100);
+                }
+                
+                // Check if a ball hit a bucket sensor
+                if ((pair.bodyA.isSensor || pair.bodyB.isSensor) && 
+                    (balls.includes(pair.bodyA) || balls.includes(pair.bodyB))) {
+                    
+                    const sensor = pair.bodyA.isSensor ? pair.bodyA : pair.bodyB;
+                    const ball = pair.bodyA.isSensor ? pair.bodyB : pair.bodyA;
+                    
+                    if (sensor.bucketIndex !== undefined && balls.includes(ball)) {
+                        scorePoints(sensor.bucketIndex, ball);
+                        
+                        // Remove ball from tracking array
+                        const ballIndex = balls.indexOf(ball);
+                        if (ballIndex !== -1) {
+                            balls.splice(ballIndex, 1);
+                        }
+                        
+                        // Remove ball from world after a delay
+                        setTimeout(() => {
+                            Matter.Composite.remove(world, ball);
+                            
+                            // Check if game is over
+                            if (ballsLeft === 0 && balls.length === 0) {
+                                setTimeout(checkGameOver, 2000);
+                            }
+                        }, 100);
+                    }
+                }
+            }
+        }
+        
+        function scorePoints(bucketIndex, ball) {
+            const points = config.bucketValues[bucketIndex];
+            score += points;
+            scoreDisplay.textContent = formatNumber(score);
+            
+            // Calculate middle bucket and adjacent buckets
+            const middleIndex = Math.floor((config.buckets - 1) / 2);
+            const isMiddle = bucketIndex === middleIndex;
+            const isAdjacent = Math.abs(bucketIndex - middleIndex) === 1;
+            
+            // Show visual feedback on bucket
+            const bucket = document.querySelector(`.bucket[data-index="${bucketIndex}"]`);
+            if (bucket) {
+                bucket.classList.add('glow');
+                setTimeout(() => {
+                    bucket.classList.remove('glow');
+                }, 500);
+                
+                // Add glow effect to bucket hole
+                const bucketHole = bucket.querySelector('.bucket-hole');
+                if (bucketHole) {
+                    // Apply appropriate glow class
+                    if (isMiddle) {
+                        bucketHole.classList.add('glow-center');
+                        setTimeout(() => bucketHole.classList.remove('glow-center'), 2000);
+                    } else if (isAdjacent) {
+                        bucketHole.classList.add('glow-adjacent');
+                        setTimeout(() => bucketHole.classList.remove('glow-adjacent'), 1750);
+                    } else {
+                        bucketHole.classList.add('glow-regular');
+                        setTimeout(() => bucketHole.classList.remove('glow-regular'), 1000);
+                    }
+                }
+            }
+            
+            // Create score popup
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            
+            // Add appropriate class based on position
+            if (isMiddle) {
+                popup.classList.add('center');
+            } else if (isAdjacent) {
+                popup.classList.add('adjacent');
+            } else {
+                popup.classList.add('regular');
+            }
+            
+            popup.textContent = `+${formatNumber(points)}`;
+            
+            // Position the popup directly above the bucket
+            popup.style.position = 'absolute';
+            popup.style.zIndex = '50';
+            
+            // Calculate the proper position
+            const bucketRect = bucket.getBoundingClientRect();
+            const containerRect = canvasContainer.getBoundingClientRect();
+            
+            // Horizontal centering
+            popup.style.left = `${(bucketIndex + 0.5) * (canvas.width / config.buckets) - 40}px`;
+            
+            // Position slightly above the bucket hole
+            popup.style.bottom = '80px';
+            
+            // Add popup to the container
+            canvasContainer.appendChild(popup);
+            
+            // Set duration based on position (already handled by CSS animations)
+            // But we need to remove the element after animation completes
+            const duration = isMiddle ? 2000 : isAdjacent ? 1750 : 1000;
+            
+            setTimeout(() => {
+                popup.remove();
+            }, duration);
+            
+            // Play sound
+            playBucketSound(bucketIndex);
+            
+            // Create ember explosion effect
+            createEmberExplosion(bucketIndex);
+        }
+        
+        function playBallDropSound() {
+            const frequency = 400 + Math.random() * 100;
+            playSound(frequency, 0.03, 'sine', 0.1);
+        }
+        
+        function playPegHitSound(frequency) {
+            playSound(frequency, 0.05, 'triangle', 0.08);
+        }
+        
+        function playBucketSound(bucketIndex) {
+            if (!config.soundEnabled) return;
+            
+            // Calculate how far from center the bucket is
+            const middleIndex = Math.floor((config.buckets - 1) / 2);
+            const distFromCenter = Math.abs(bucketIndex - middleIndex);
+            const isMiddle = distFromCenter === 0;
+            const isAdjacent = distFromCenter === 1;
+            
+            // Sound intensity based on position
+            let volume = 0.1;
+            let intensity = 1;
+            
+            if (isMiddle) {
+                // Center bucket - most intense sound
+                volume = 0.3;
+                intensity = 2;
+            } else if (isAdjacent) {
+                // Adjacent buckets - enhanced sound
+                volume = 0.2;
+                intensity = 1.5;
+            }
+            
+            // Base frequency depends on position (lower/deeper sounds for center)
+            const baseFreq = isMiddle ? 80 : isAdjacent ? 120 : 180;
+            
+            // Play sizzle sound with varying intensity
+            playSizzleSound(baseFreq, volume, intensity);
+        }
+        
+        function playSound(frequency, volume, type = 'sine', duration = 0.3) {
+            if (!audioContext || !config.soundEnabled) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.value = volume;
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+                
+                setTimeout(() => {
+                    oscillator.stop();
+                }, duration * 1000);
+            } catch (e) {
+                console.warn('Error playing sound', e);
+            }
+        }
+        
+        function playSizzleSound(baseFreq, volume, intensity = 1) {
+            if (!audioContext || !config.soundEnabled) return;
+            
+            try {
+                // Create noise
+                const bufferSize = 2 * audioContext.sampleRate;
+                const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                
+                const noise = audioContext.createBufferSource();
+                noise.buffer = noiseBuffer;
+                
+                // Create filter for sizzle effect
+                const filter = audioContext.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = baseFreq;
+                filter.Q.value = 1;
+                
+                // More intense filter for center buckets
+                if (intensity > 1.3) {
+                    // Add a second filter for more character
+                    const filter2 = audioContext.createBiquadFilter();
+                    filter2.type = 'lowpass';
+                    filter2.frequency.value = baseFreq * 2;
+                    
+                    // Add distortion for intense center bucket sounds
+                    const distortion = audioContext.createWaveShaper();
+                    distortion.curve = makeDistortionCurve(intensity * 50);
+                    
+                    // Create gain for volume control
+                    const gainNode = audioContext.createGain();
+                    gainNode.gain.value = volume;
+                    
+                    // Connect nodes with distortion for intense sounds
+                    noise.connect(filter);
+                    filter.connect(filter2);
+                    filter2.connect(distortion);
+                    distortion.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // More complex envelope for intense sounds
+                    const now = audioContext.currentTime;
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(volume, now + 0.05);
+                    gainNode.gain.setValueAtTime(volume, now + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(volume * 0.8, now + 0.2);
+                    gainNode.gain.exponentialRampToValueAtTime(0.00001, now + 0.7);
+                    
+                    // Start noise
+                    noise.start();
+                    
+                    // Stop after duration
+                    setTimeout(() => {
+                        noise.stop();
+                    }, 700);
+                } else {
+                    // Create gain for volume control
+                    const gainNode = audioContext.createGain();
+                    gainNode.gain.value = volume;
+                    
+                    // Connect nodes
+                    noise.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // Start noise and ramp down volume
+                    noise.start();
+                    gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.6);
+                    
+                    // Stop after duration
+                    setTimeout(() => {
+                        noise.stop();
+                    }, 600);
+                }
+            } catch (e) {
+                console.warn('Error playing sizzle sound', e);
+            }
+        }
+        
+        // Creates a distortion curve for sound effects
+        function makeDistortionCurve(amount) {
+            const k = typeof amount === 'number' ? amount : 50;
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const deg = Math.PI / 180;
+            
+            for (let i = 0; i < n_samples; ++i) {
+                const x = i * 2 / n_samples - 1;
+                curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+            }
+            
+            return curve;
+        }
+        
+        // Play 8-bit style background music
+        function startBackgroundMusic() {
+            if (!audioContext || !config.musicEnabled) return;
+            
+            // Stop any existing music
+            stopBackgroundMusic();
+            
+            // Simple melody pattern (pentatonic scale notes indices)
+            const melody = [0, 2, 4, 7, 9, 7, 4, 2];
+            // Base frequencies for pentatonic scale
+            const baseFreqs = [196, 220, 246.94, 293.66, 329.63, 392, 440, 493.88];
+            
+            let noteIndex = 0;
+            let octave = 1;
+            
+            // Create music animation
+            const musicWave = document.getElementById('music-wave');
+            if (musicWave) {
+                musicWave.style.display = 'flex';
+            }
+            
+            // Play notes in sequence
+            musicInterval = setInterval(() => {
+                if (!config.musicEnabled) {
+                    stopBackgroundMusic();
+                    return;
+                }
+                
+                // Get current note
+                const note = melody[noteIndex % melody.length];
+                const freq = baseFreqs[note] * (octave < 2 ? 0.5 : 1);
+                
+                // Play note
+                const osc = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                gainNode.gain.value = 0.05; // Keep music subtle
+                
+                osc.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                osc.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.3);
+                
+                // Store for cleanup
+                musicOscillators.push(osc);
+                
+                // Schedule stop
+                setTimeout(() => {
+                    osc.stop();
+                    const index = musicOscillators.indexOf(osc);
+                    if (index > -1) {
+                        musicOscillators.splice(index, 1);
+                    }
+                }, 350);
+                
+                // Move to next note
+                noteIndex++;
+                
+                // Change octave occasionally
+                if (noteIndex % 8 === 0) {
+                    octave = octave === 1 ? 2 : 1;
+                }
+            }, 350);
+        }
+        
+        function stopBackgroundMusic() {
+            if (musicInterval) {
+                clearInterval(musicInterval);
+                musicInterval = null;
+            }
+            
+            // Stop all active oscillators
+            if (musicOscillators) {
+                musicOscillators.forEach(osc => {
+                    try {
+                        osc.stop();
+                    } catch (e) {
+                        // Ignore errors from already stopped oscillators
+                    }
+                });
+                musicOscillators = [];
+            }
+            
+            // Hide music animation
+            const musicWave = document.getElementById('music-wave');
+            if (musicWave) {
+                musicWave.style.display = 'none';
+            }
+        }
+        
+        function checkGameOver() {
+            if (ballsLeft === 0 && balls.length === 0) {
+                gameRunning = false;
+                
+                // Get score container and game overlay
+                const scoreContainer = document.querySelector('.score');
+                const gameOverlay = document.getElementById('game-overlay');
+                
+                // Add game-over class to score for animation
+                scoreContainer.classList.add('game-over');
+                
+                // Show overlay
+                if (gameOverlay) {
+                    gameOverlay.style.display = 'flex';
+                }
+                
+                // Play a final sound
+                if (config.soundEnabled) {
+                    playSizzleSound(150, 0.2, 2);
+                }
+                
+                // Create falling embers for end game effect
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const randomBucket = Math.floor(Math.random() * config.buckets);
+                        createEmberExplosion(randomBucket);
+                    }, i * 200);
+                }
+            }
+        }
+        
+        function resetGame() {
+            // Reset game state
+            score = 0;
+            ballsLeft = config.startingBalls;
+            gameRunning = true;
+            
+            // Update displays
+            scoreDisplay.textContent = '0';
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Remove game-over state
+            const scoreContainer = document.querySelector('.score');
+            scoreContainer.classList.remove('game-over');
+            
+            // Hide overlay
+            const gameOverlay = document.getElementById('game-overlay');
+            if (gameOverlay) {
+                gameOverlay.style.display = 'none';
+            }
+            
+            // Clear physics world
+            Matter.Composite.clear(world);
+            pegs = [];
+            walls = [];
+            balls = [];
+            bucketBodies = [];
+            
+            // Stop any continuous dropping
+            stopContinuousDrop();
+            
+            // Re-create physics world
+            createBoundaries();
+            createPegs();
+            createBuckets();
+            
+            // Note: we're not regenerating bucket values on reset anymore
+            updateBucketDisplay();
+            
+            // Reset particles
+            particles = [];
+            initBaseEmbers();
+        }
+        
+        function setupInputHandlers() {
+            // Edit mode toggle
+            editModeBtn.addEventListener('click', () => {
+                editMode = !editMode;
+                configPanel.style.display = editMode ? 'block' : 'none';
+                editModeBtn.classList.toggle('active', editMode);
+                editModeBtn.textContent = editMode ? 'Close Editor' : 'Edit Mode';
+                
+                // Update bucket display to show which are editable
+                updateBucketDisplay();
+            });
+            
+            // Apply configuration changes
+            applyBtn.addEventListener('click', applyConfigChanges);
+            
+            // Reset game
+            resetBtn.addEventListener('click', resetGame);
+            
+            // Drop button - fixed to work correctly with both click and hold
+            dropBtn.addEventListener('mousedown', startContinuousDrop);
+            dropBtn.addEventListener('mouseup', stopContinuousDrop);
+            dropBtn.addEventListener('mouseleave', stopContinuousDrop);
+            dropBtn.addEventListener('touchstart', e => {
+                e.preventDefault();
+                startContinuousDrop();
+            });
+            dropBtn.addEventListener('touchend', e => {
+                e.preventDefault();
+                stopContinuousDrop();
+            });
+            
+            // Multiple drop buttons
+            drop5xBtn.addEventListener('click', () => dropMultipleBalls(5));
+            drop10xBtn.addEventListener('click', () => dropMultipleBalls(10));
+            drop50xBtn.addEventListener('click', () => dropMultipleBalls(50));
+            drop100xBtn.addEventListener('click', () => dropMultipleBalls(100));
+            
+            // Bucket click handlers for editing values
+            document.addEventListener('click', e => {
+                const bucket = e.target.closest('.bucket');
+                if (bucket && editMode && bucket.classList.contains('edit-bucket')) {
+                    showBucketEditPopup(bucket);
+                }
+            });
+            
+            // Sound toggle
+            const soundToggle = document.getElementById('sound-toggle');
+            if (soundToggle) {
+                soundToggle.addEventListener('change', () => {
+                    config.soundEnabled = soundToggle.checked;
+                });
+            }
+            
+            // Game overlay click for reset after game over
+            const gameOverlay = document.getElementById('game-overlay');
+            if (gameOverlay) {
+                gameOverlay.addEventListener('click', () => {
+                    if (!gameRunning) {
+                        resetGame();
+                    }
+                });
+            }
+            
+            // Color pickers
+            setupColorPickers();
+        }
+        
+        function setupColorPickers() {
+            const pegColorOptions = document.querySelectorAll('#peg-color-picker .color-option');
+            pegColorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.dataset.color;
+                    config.pegColor = color;
+                    
+                    // Update all pegs
+                    pegs.forEach(peg => {
+                        peg.render.fillStyle = color;
+                        peg.originalColor = color;
+                    });
+                    
+                    // Visual feedback
+                    pegColorOptions.forEach(o => o.style.border = '2px solid rgba(255, 255, 255, 0.2)');
+                    option.style.border = '2px solid white';
+                });
+                
+                // Set initial selection
+                if (option.dataset.color === config.pegColor) {
+                    option.style.border = '2px solid white';
+                }
+            });
+            
+            const ballColorOptions = document.querySelectorAll('#ball-color-picker .color-option');
+            ballColorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    config.ballColor = option.dataset.color;
+                    
+                    // Visual feedback
+                    ballColorOptions.forEach(o => o.style.border = '2px solid rgba(255, 255, 255, 0.2)');
+                    option.style.border = '2px solid white';
+                });
+                
+                // Set initial selection
+                if (option.dataset.color === config.ballColor) {
+                    option.style.border = '2px solid white';
+                }
+            });
+        }
+        
+        function applyConfigChanges() {
+            // Save old values
+            const oldRows = config.rows;
+            const oldColumns = config.columns;
+            const oldBuckets = config.buckets;
+            
+            // Get values from inputs
+            config.rows = parseInt(document.getElementById('rows-input').value);
+            config.columns = parseInt(document.getElementById('columns-input').value);
+            config.buckets = parseInt(document.getElementById('buckets-input').value);
+            config.ballSize = parseInt(document.getElementById('ball-size-input').value);
+            config.restitution = parseFloat(document.getElementById('restitution-input').value);
+            config.gravity = parseFloat(document.getElementById('gravity-input').value);
+            config.startingBalls = parseInt(document.getElementById('balls-input').value);
+            config.scoreLabel = document.getElementById('score-label-input').value;
+            config.gameTitle = document.getElementById('game-title-input').value;
+            
+            // Update displays
+            scoreLabel.textContent = config.scoreLabel;
+            gameTitle.textContent = config.gameTitle;
+            
+            // Set balls left to new value
+            ballsLeft = config.startingBalls;
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Update gravity
+            engine.gravity.y = config.gravity;
+            
+            // If the layout has changed, rebuild the board
+            if (oldRows !== config.rows || oldColumns !== config.columns || oldBuckets !== config.buckets) {
+                resetGame();
+            } else {
+                // Generate new bucket values if we haven't edited them manually
+                if (!document.querySelector('.bucket-edit-popup')) {
+                    generateBucketValues();
+                }
+                updateBucketDisplay();
+            }
+            
+            // Close config panel
+            editMode = false;
+            configPanel.style.display = 'none';
+            editModeBtn.classList.remove('active');
+            editModeBtn.textContent = 'Edit Mode';
+            updateBucketDisplay();
+        }
+        
+        function handleResize() {
+            canvas.width = canvasContainer.offsetWidth;
+            canvas.height = canvasContainer.offsetHeight;
+            
+            particlesCanvas.width = canvasContainer.offsetWidth;
+            particlesCanvas.height = canvasContainer.offsetHeight;
+            
+            Matter.Render.setPixelRatio(render, window.devicePixelRatio);
+            Matter.Render.setSize(render, canvas.width, canvas.height);
+            
+            // Rebuild the game
+            resetGame();
+        }
+        
+        // Particle System
+        function initBaseEmbers() {
+            baseEmbers = [];
+            const numEmbers = 15;
+            
+            for (let i = 0; i < numEmbers; i++) {
+                baseEmbers.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height - Math.random() * 30,
+                    radius: 2 + Math.random() * 3,
+                    color: getEmberColor(Math.random()),
+                    velocity: { x: (Math.random() - 0.5) * 0.5, y: -0.5 - Math.random() * 1.5 },
+                    life: 0,
+                    maxLife: 100 + Math.random() * 100
+                });
+            }
+        }
+        
+        function getEmberColor(t) {
+            // Colors from orange-yellow to red
+            const colors = [
+                { r: 255, g: 107, b: 53 },  // Orange
+                { r: 255, g: 140, b: 85 },  // Light orange
+                { r: 255, g: 69, b: 0 },    // Red-orange
+                { r: 255, g: 177, b: 31 }   // Yellow-orange
+            ];
+            
+            const index = Math.floor(t * colors.length);
+            const color = colors[Math.min(index, colors.length - 1)];
+            
+            return `rgba(${color.r}, ${color.g}, ${color.b}, ${0.7 + Math.random() * 0.3})`;
+        }
+        
+        function createEmberExplosion(bucketIndex) {
+            const bucketWidth = canvas.width / config.buckets;
+            const x = bucketIndex * bucketWidth + bucketWidth / 2;
+            const y = canvas.height - 30;
+            
+            // Calculate middle bucket index
+            const middleIndex = Math.floor((config.buckets - 1) / 2);
+            const isMiddle = bucketIndex === middleIndex;
+            const isAdjacent = Math.abs(bucketIndex - middleIndex) === 1;
+            
+            // Number of particles based on bucket position
+            let numParticles = 10; // Default for regular buckets
+            
+            if (isMiddle) {
+                numParticles = 40; // Many particles for middle
+            } else if (isAdjacent) {
+                numParticles = 25; // More particles for adjacent
+            }
+            
+            // Apply particle intensity multiplier
+            numParticles = Math.round(numParticles * config.particleIntensity);
+            
+            // Create particles
+            for (let i = 0; i < numParticles; i++) {
+                // Most particles go up, fewer to the sides
+                const angle = (Math.random() * Math.PI * 1.5) - (Math.PI * 0.75);
+                
+                // Higher initial velocity for center/adjacent buckets
+                const speed = isMiddle ? 3 + Math.random() * 2 : 
+                             isAdjacent ? 2 + Math.random() * 2 : 
+                             1 + Math.random() * 2;
+                
+                particles.push({
+                    x,
+                    y,
+                    radius: 2 + Math.random() * 3,
+                    color: getEmberColor(Math.random()),
+                    velocity: {
+                        x: Math.cos(angle) * speed,
+                        // Upward initial velocity, will be affected by gravity
+                        y: Math.sin(angle) * speed - (isMiddle ? 3 : isAdjacent ? 2 : 1)
+                    },
+                    gravity: 0.15 + Math.random() * 0.1, // Stronger gravity for faster fall
+                    life: 0,
+                    // Longer max life for middle bucket particles
+                    maxLife: isMiddle ? 40 + Math.random() * 40 : 
+                             isAdjacent ? 30 + Math.random() * 30 : 
+                             20 + Math.random() * 20,
+                    alphaFade: 0.03 + Math.random() * 0.05
+                });
+            }
+        }
+        
+        function updateParticles() {
+            // Clear canvas
+            particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            
+            // Update and draw base embers
+            for (let i = 0; i < baseEmbers.length; i++) {
+                const ember = baseEmbers[i];
+                
+                ember.x += ember.velocity.x;
+                ember.y += ember.velocity.y;
+                ember.life++;
+                
+                // If ember is dead, reset it at the bottom
+                if (ember.life >= ember.maxLife) {
+                    ember.x = Math.random() * canvas.width;
+                    ember.y = canvas.height - Math.random() * 10;
+                    ember.velocity.y = -0.5 - Math.random() * 1.5;
+                    ember.life = 0;
+                    ember.maxLife = 100 + Math.random() * 100;
+                }
+                
+                // Calculate alpha based on life
+                const alpha = 1 - ember.life / ember.maxLife;
+                
+                // Draw ember
+                particlesCtx.beginPath();
+                particlesCtx.arc(ember.x, ember.y, ember.radius, 0, Math.PI * 2);
+                particlesCtx.fillStyle = ember.color.replace(/[\d\.]+\)$/g, `${alpha})`);
+                particlesCtx.fill();
+            }
+            
+            // Update and draw explosion particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                p.x += p.velocity.x;
+                p.y += p.velocity.y;
+                p.velocity.y += p.gravity || 0.15; // Stronger gravity for faster fall
+                p.life++;
+                
+                // Remove dead particles
+                if (p.life >= p.maxLife) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+                
+                // Calculate alpha based on life
+                const alpha = 1 - p.life / p.maxLife;
+                
+                // Draw particle
+                particlesCtx.beginPath();
+                particlesCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                particlesCtx.fillStyle = p.color.replace(/[\d\.]+\)$/g, `${alpha})`);
+                particlesCtx.fill();
+            }
+            
+            // Continue animation loop
+            requestAnimationFrame(updateParticles);
+        }
+        
+        // Initialize game on load
+        window.addEventListener('load', initGame);
+        
+        // Update input limits
+        window.addEventListener('load', () => {
+            // Update input min/max values based on config
+            document.getElementById('rows-input').min = 5;
+            document.getElementById('rows-input').max = 20;
+            document.getElementById('rows-input').value = config.rows;
+            
+            document.getElementById('columns-input').min = 5;
+            document.getElementById('columns-input').max = 20;
+            document.getElementById('columns-input').value = config.columns;
+            
+            document.getElementById('buckets-input').min = 5;
+            document.getElementById('buckets-input').max = 15;
+            document.getElementById('buckets-input').value = config.buckets;
+        });
+    </script>
+</body>
+</html>
