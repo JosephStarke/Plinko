@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PLINKO BURN</title>
     <style>
         body {
@@ -13,9 +13,11 @@
             background-color: #2C1B18;
             color: white;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             overflow-x: hidden;
             background-image: linear-gradient(to bottom, #3B1D15, #2C1B18);
+            min-height: 100vh;
+            touch-action: manipulation;
         }
 
         h1 {
@@ -26,6 +28,12 @@
             text-align: center;
             letter-spacing: 2px;
             transform: rotate(-2deg);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
         }
         
         .creator-credit {
@@ -48,6 +56,58 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 107, 53, 0.3);
             padding: 20px;
             border: 5px solid #4A2F2A;
+            box-sizing: border-box;
+            transform-origin: top center;
+        }
+        
+        /* Scale down the entire game on smaller screens while keeping original dimensions */
+        @media (max-width: 840px) {
+            .game-container {
+                transform: scale(0.95);
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                transform: scale(0.85);
+                margin-bottom: 40px;
+            }
+        }
+        
+        @media (max-width: 680px) {
+            .game-container {
+                transform: scale(0.75);
+                margin-bottom: 60px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                transform: scale(0.65);
+                margin-bottom: 80px;
+            }
+        }
+        
+        @media (max-width: 520px) {
+            .game-container {
+                transform: scale(0.55);
+                margin-bottom: 100px;
+            }
+        }
+        
+        @media (max-width: 440px) {
+            .game-container {
+                transform: scale(0.45);
+                margin-bottom: 120px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .game-container {
+                transform: scale(0.38);
+                margin-bottom: 140px;
+            }
         }
 
         .stats {
@@ -57,6 +117,8 @@
             margin-bottom: 15px;
             position: relative;
             z-index: 2;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .score, .balls-left {
@@ -67,6 +129,9 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 107, 53, 0.3);
             font-weight: bold;
             transition: all 0.5s ease;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
         }
         
         .score.game-over {
@@ -97,9 +162,9 @@
         .drop-buttons {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 8px;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
 
@@ -113,11 +178,14 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 107, 53, 0.2);
             display: none;
             transition: all 0.3s ease;
+            overflow-x: hidden;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .config-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
         }
 
@@ -139,6 +207,7 @@
             background-color: #3A2520;
             color: white;
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            font-size: 16px; /* Better size for mobile inputs */
         }
 
         .config-item input:focus, .config-item select:focus, .config-item textarea:focus {
@@ -161,6 +230,10 @@
             font-size: 1.1rem;
             box-shadow: 0px 4px 0px #7A1C00, 0px 6px 10px rgba(0, 0, 0, 0.4);
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+            min-width: 80px;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .action-btn:hover {
@@ -187,6 +260,8 @@
             font-size: 1.1rem;
             box-shadow: 0px 4px 0px #0B5394, 0px 6px 10px rgba(0, 0, 0, 0.4);
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .edit-mode:hover {
@@ -218,11 +293,15 @@
             border-radius: 20px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 107, 53, 0.2);
             background-color: #241914;
+            box-sizing: border-box;
         }
 
         canvas {
             display: block;
             background-color: transparent;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
         }
 
         #particles-canvas {
@@ -261,6 +340,7 @@
             justify-content: center;
             font-size: 0.8rem;
             color: white;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .drop-zone:hover {
@@ -291,6 +371,7 @@
             position: relative;
             cursor: pointer;
             transition: transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .bucket-hole {
@@ -465,6 +546,7 @@
             flex-direction: column;
             gap: 5px;
             border: 2px solid #4A2F2A;
+            width: 150px;
         }
 
         .bucket-edit-popup input {
@@ -472,8 +554,9 @@
             border: 1px solid #4A2F2A;
             border-radius: 5px;
             color: white;
-            padding: 5px;
+            padding: 10px;
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            font-size: 16px;
         }
 
         .bucket-edit-popup button {
@@ -481,9 +564,11 @@
             border: none;
             border-radius: 5px;
             color: white;
-            padding: 5px 10px;
+            padding: 10px;
             cursor: pointer;
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            font-size: 16px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .bucket-edit-popup button:hover {
@@ -495,14 +580,16 @@
             margin-top: 10px;
             font-style: italic;
             text-align: center;
+            font-size: 1rem;
         }
 
         .bottom-controls {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 15px;
             justify-content: center;
             width: 100%;
+            flex-wrap: wrap;
         }
         
         .sound-controls {
@@ -510,6 +597,8 @@
             align-items: center;
             gap: 20px;
             margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
         .toggle-container {
@@ -603,6 +692,21 @@
         @keyframes soundWave {
             0% { height: 5px; }
             100% { height: 20px; }
+        }
+        
+        /* Game overlay for handling game over state */
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -712,13 +816,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
     <script>
-        // Game Configuration
+        // Game Configuration - keeping original dimensions
         const config = {
             rows: 18,
             columns: 12,
             buckets: 15,
             pegSize: 6,
-            ballSize: 5,
+            ballSize: 7,
             ballDensity: 0.3,
             restitution: 0.5,
             friction: 0.1,
@@ -747,6 +851,7 @@
         let baseEmbers = [];
         let musicInterval = null;
         let musicOscillators = [];
+        let isResetting = false; // Flag to prevent multiple resets
         
         // Audio Context and Sounds
         let audioContext;
@@ -767,6 +872,7 @@
         const drop50xBtn = document.getElementById('drop-50x-btn');
         const drop100xBtn = document.getElementById('drop-100x-btn');
         const gameTitle = document.getElementById('game-title');
+        const gameOverlay = document.getElementById('game-overlay');
         
         // Format large numbers with support for shorthand
         function formatNumber(num) {
@@ -811,6 +917,10 @@
             // Initialize audio context
             initAudio();
             
+            // Use fixed dimensions for consistency
+            const fixedWidth = 800;
+            const fixedHeight = 600;
+            
             // Set up Matter.js
             engine = Matter.Engine.create({
                 enableSleeping: true
@@ -819,21 +929,21 @@
             engine.gravity.y = config.gravity;
             
             canvas = document.getElementById('plinko-canvas');
-            canvas.width = canvasContainer.offsetWidth;
-            canvas.height = canvasContainer.offsetHeight;
+            canvas.width = fixedWidth;
+            canvas.height = fixedHeight;
             
-            // Initialize particles canvas
+            // Initialize particles canvas with fixed dimensions
             particlesCanvas = document.getElementById('particles-canvas');
-            particlesCanvas.width = canvasContainer.offsetWidth;
-            particlesCanvas.height = canvasContainer.offsetHeight;
+            particlesCanvas.width = fixedWidth;
+            particlesCanvas.height = fixedHeight;
             particlesCtx = particlesCanvas.getContext('2d');
             
             render = Matter.Render.create({
                 canvas: canvas,
                 engine: engine,
                 options: {
-                    width: canvas.width,
-                    height: canvas.height,
+                    width: fixedWidth,
+                    height: fixedHeight,
                     wireframes: false,
                     background: 'transparent',
                     showSleeping: false,
@@ -862,7 +972,11 @@
             
             // Event listeners
             Matter.Events.on(engine, 'collisionStart', handleCollision);
-            window.addEventListener('resize', handleResize);
+            // Only add resize listener once
+            if (!window.resizeListenerAdded) {
+                window.addEventListener('resize', handleResize);
+                window.resizeListenerAdded = true;
+            }
             
             // Input events
             setupInputHandlers();
@@ -880,7 +994,10 @@
         
         function initAudio() {
             try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // Only create AudioContext on user interaction to avoid autoplay issues
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
             } catch (e) {
                 console.warn('AudioContext not supported');
             }
@@ -898,6 +1015,9 @@
             
             // Get current canvas dimensions to ensure proper alignment
             const currentWidth = canvas.width;
+            
+            // Clear any existing walls
+            walls = [];
             
             // Left wall (positioned slightly off-screen)
             walls.push(Matter.Bodies.rectangle(
@@ -930,8 +1050,12 @@
                 chamfer: { radius: 2 }
             };
             
+            // Clear existing pegs
+            pegs = [];
+            
+            // Calculate spacing based on current canvas dimensions
             const spacing = canvas.width / (config.columns + 1);
-            const verticalSpacing = (canvas.height - 200) / (config.rows + 1);
+            const verticalSpacing = (canvas.height - 180) / (config.rows + 1); // Reduced bottom margin
             const startY = 80; // Start lower to leave room at top
             
             for (let row = 0; row < config.rows; row++) {
@@ -939,17 +1063,23 @@
                 const numPegsInRow = row % 2 === 0 ? config.columns : config.columns - 1;
                 
                 for (let col = 0; col < numPegsInRow; col++) {
-                    const peg = Matter.Bodies.circle(
-                        offsetX + spacing * (col + 1),
-                        startY + verticalSpacing * (row + 1),
-                        config.pegSize,
-                        pegOptions
-                    );
+                    const pegX = offsetX + spacing * (col + 1);
+                    const pegY = startY + verticalSpacing * (row + 1);
                     
-                    // Give peg a reference to its original color
-                    peg.originalColor = config.pegColor;
-                    
-                    pegs.push(peg);
+                    // Only create pegs that are within the canvas boundaries
+                    if (pegX > 0 && pegX < canvas.width && pegY > 0 && pegY < canvas.height - 100) {
+                        const peg = Matter.Bodies.circle(
+                            pegX,
+                            pegY,
+                            config.pegSize,
+                            pegOptions
+                        );
+                        
+                        // Give peg a reference to its original color
+                        peg.originalColor = config.pegColor;
+                        
+                        pegs.push(peg);
+                    }
                 }
             }
             
@@ -1045,6 +1175,11 @@
         function dropBall() {
             if (ballsLeft <= 0 || !gameRunning) return;
             
+            // Initialize audio context on first interaction
+            if (!audioContext) {
+                initAudio();
+            }
+            
             // Random position along the top
             const x = Math.random() * (canvas.width - 100) + 50;
             const y = 40;
@@ -1078,6 +1213,11 @@
         }
         
         function dropMultipleBalls(count) {
+            // Initialize audio context on first interaction
+            if (!audioContext) {
+                initAudio();
+            }
+            
             const maxCount = Math.min(count, ballsLeft);
             if (maxCount <= 0) return;
             
@@ -1095,6 +1235,11 @@
         }
         
         function startContinuousDrop() {
+            // Initialize audio context on first interaction
+            if (!audioContext) {
+                initAudio();
+            }
+            
             if (dropInterval) return;
             
             dropBall(); // Drop first ball immediately
@@ -1116,30 +1261,12 @@
         }
         
         function generateBucketValues() {
-            // If bucket values already exist, don't regenerate
+            // If bucket values already exist with matching length, don't regenerate
             if (config.bucketValues.length === config.buckets) {
                 return;
             }
             
-            // Check if bucket values were manually set
-            const bucketValuesInput = document.getElementById('bucket-values-input');
-            if (bucketValuesInput && bucketValuesInput.value.trim()) {
-                try {
-                    const values = bucketValuesInput.value.split(',').map(v => {
-                        const parsed = parseInt(v.trim());
-                        return isNaN(parsed) ? 0 : parsed;
-                    });
-                    
-                    // If we have enough values, use them
-                    if (values.length >= config.buckets) {
-                        config.bucketValues = values.slice(0, config.buckets);
-                        return;
-                    }
-                } catch (e) {
-                    console.error("Error parsing bucket values", e);
-                }
-            }
-            
+            // Reset to empty array
             config.bucketValues = [];
             
             // Set middle bucket to 50B
@@ -1168,7 +1295,7 @@
             buckets.forEach((bucket, index) => {
                 const label = bucket.querySelector('.bucket-label');
                 if (label) {
-                    label.textContent = formatNumber(config.bucketValues[index]);
+                    label.textContent = formatNumber(config.bucketValues[index] || 0);
                 }
                 
                 // Add or remove edit-bucket class based on edit mode
@@ -1184,6 +1311,7 @@
             // If another popup is open, close it
             if (activePopup) {
                 activePopup.remove();
+                activePopup = null;
             }
             
             const bucketIndex = parseInt(bucket.dataset.index);
@@ -1195,6 +1323,7 @@
             const input = document.createElement('input');
             input.type = 'text';
             input.value = formatNumber(currentValue);
+            
             input.addEventListener('keydown', e => {
                 if (e.key === 'Enter') {
                     saveBucketValue();
@@ -1212,11 +1341,11 @@
             // Set as active popup
             activePopup = popup;
             
-            // Focus input
+            // Focus input (with slight delay to allow tap events to complete)
             setTimeout(() => {
                 input.focus();
                 input.select();
-            }, 10);
+            }, 50);
             
             function saveBucketValue() {
                 const newValue = parseShorthandNumber(input.value);
@@ -1226,19 +1355,21 @@
                 activePopup = null;
             }
             
-            // Close when clicking outside
-            const closeOnOutsideClick = e => {
-                if (!popup.contains(e.target) && e.target !== bucket) {
-                    popup.remove();
-                    activePopup = null;
-                    document.removeEventListener('click', closeOnOutsideClick);
-                }
-            };
-            
-            // Add event listener with a slight delay to prevent immediate closing
+            // Close when clicking/tapping outside - with a small delay to avoid immediate closing
             setTimeout(() => {
-                document.addEventListener('click', closeOnOutsideClick);
-            }, 10);
+                const closeHandler = e => {
+                    // Only close if the click/tap is outside the popup and not on the bucket
+                    if (!popup.contains(e.target) && !bucket.contains(e.target) || bucket === e.target) {
+                        popup.remove();
+                        activePopup = null;
+                        document.removeEventListener('click', closeHandler);
+                        document.removeEventListener('touchend', closeHandler);
+                    }
+                };
+                
+                document.addEventListener('click', closeHandler);
+                document.addEventListener('touchend', closeHandler);
+            }, 100);
         }
         
         function handleCollision(event) {
@@ -1359,17 +1490,14 @@
             popup.textContent = `+${formatNumber(points)}`;
             
             // Position the popup directly above the bucket
+            // Using percentage-based positioning for better mobile compatibility
+            const bucketWidth = 100 / config.buckets;
+            const leftPosition = bucketWidth * (bucketIndex + 0.5);
+            
             popup.style.position = 'absolute';
             popup.style.zIndex = '50';
-            
-            // Calculate the proper position
-            const bucketRect = bucket.getBoundingClientRect();
-            const containerRect = canvasContainer.getBoundingClientRect();
-            
-            // Horizontal centering
-            popup.style.left = `${(bucketIndex + 0.5) * (canvas.width / config.buckets) - 40}px`;
-            
-            // Position slightly above the bucket hole
+            popup.style.left = `${leftPosition}%`;
+            popup.style.transform = 'translateX(-50%)';
             popup.style.bottom = '80px';
             
             // Add popup to the container
@@ -1380,7 +1508,9 @@
             const duration = isMiddle ? 2000 : isAdjacent ? 1750 : 1000;
             
             setTimeout(() => {
-                popup.remove();
+                if (popup && popup.parentNode) {
+                    popup.remove();
+                }
             }, duration);
             
             // Play sound
@@ -1391,16 +1521,18 @@
         }
         
         function playBallDropSound() {
+            if (!audioContext || !config.soundEnabled) return;
             const frequency = 400 + Math.random() * 100;
             playSound(frequency, 0.03, 'sine', 0.1);
         }
         
         function playPegHitSound(frequency) {
+            if (!audioContext || !config.soundEnabled) return;
             playSound(frequency, 0.05, 'triangle', 0.08);
         }
         
         function playBucketSound(bucketIndex) {
-            if (!config.soundEnabled) return;
+            if (!audioContext || !config.soundEnabled) return;
             
             // Calculate how far from center the bucket is
             const middleIndex = Math.floor((config.buckets - 1) / 2);
@@ -1553,106 +1685,12 @@
             return curve;
         }
         
-        // Play 8-bit style background music
-        function startBackgroundMusic() {
-            if (!audioContext || !config.musicEnabled) return;
-            
-            // Stop any existing music
-            stopBackgroundMusic();
-            
-            // Simple melody pattern (pentatonic scale notes indices)
-            const melody = [0, 2, 4, 7, 9, 7, 4, 2];
-            // Base frequencies for pentatonic scale
-            const baseFreqs = [196, 220, 246.94, 293.66, 329.63, 392, 440, 493.88];
-            
-            let noteIndex = 0;
-            let octave = 1;
-            
-            // Create music animation
-            const musicWave = document.getElementById('music-wave');
-            if (musicWave) {
-                musicWave.style.display = 'flex';
-            }
-            
-            // Play notes in sequence
-            musicInterval = setInterval(() => {
-                if (!config.musicEnabled) {
-                    stopBackgroundMusic();
-                    return;
-                }
-                
-                // Get current note
-                const note = melody[noteIndex % melody.length];
-                const freq = baseFreqs[note] * (octave < 2 ? 0.5 : 1);
-                
-                // Play note
-                const osc = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                osc.type = 'square';
-                osc.frequency.value = freq;
-                gainNode.gain.value = 0.05; // Keep music subtle
-                
-                osc.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                osc.start();
-                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.3);
-                
-                // Store for cleanup
-                musicOscillators.push(osc);
-                
-                // Schedule stop
-                setTimeout(() => {
-                    osc.stop();
-                    const index = musicOscillators.indexOf(osc);
-                    if (index > -1) {
-                        musicOscillators.splice(index, 1);
-                    }
-                }, 350);
-                
-                // Move to next note
-                noteIndex++;
-                
-                // Change octave occasionally
-                if (noteIndex % 8 === 0) {
-                    octave = octave === 1 ? 2 : 1;
-                }
-            }, 350);
-        }
-        
-        function stopBackgroundMusic() {
-            if (musicInterval) {
-                clearInterval(musicInterval);
-                musicInterval = null;
-            }
-            
-            // Stop all active oscillators
-            if (musicOscillators) {
-                musicOscillators.forEach(osc => {
-                    try {
-                        osc.stop();
-                    } catch (e) {
-                        // Ignore errors from already stopped oscillators
-                    }
-                });
-                musicOscillators = [];
-            }
-            
-            // Hide music animation
-            const musicWave = document.getElementById('music-wave');
-            if (musicWave) {
-                musicWave.style.display = 'none';
-            }
-        }
-        
         function checkGameOver() {
             if (ballsLeft === 0 && balls.length === 0) {
                 gameRunning = false;
                 
-                // Get score container and game overlay
+                // Get score container
                 const scoreContainer = document.querySelector('.score');
-                const gameOverlay = document.getElementById('game-overlay');
                 
                 // Add game-over class to score for animation
                 scoreContainer.classList.add('game-over');
@@ -1678,6 +1716,10 @@
         }
         
         function resetGame() {
+            // Prevent multiple reset calls
+            if (isResetting) return;
+            isResetting = true;
+            
             // Reset game state
             score = 0;
             ballsLeft = config.startingBalls;
@@ -1692,37 +1734,84 @@
             scoreContainer.classList.remove('game-over');
             
             // Hide overlay
-            const gameOverlay = document.getElementById('game-overlay');
             if (gameOverlay) {
                 gameOverlay.style.display = 'none';
             }
             
-            // Clear physics world
-            Matter.Composite.clear(world);
+            // Close any open popups
+            if (activePopup) {
+                activePopup.remove();
+                activePopup = null;
+            }
+            
+            // Stop any continuous dropping
+            stopContinuousDrop();
+            
+            // Store original canvas dimensions
+            const originalWidth = canvas.width;
+            const originalHeight = canvas.height;
+            
+            // Save the engine's gravity
+            const originalGravity = engine.gravity.y;
+            
+            // Completely destroy the old engine and create a new one
+            Matter.Engine.clear(engine);
+            Matter.Render.stop(render);
+            Matter.Runner.stop(engine);
+            
+            // Create a fresh engine
+            engine = Matter.Engine.create({
+                enableSleeping: true
+            });
+            world = engine.world;
+            engine.gravity.y = originalGravity;
+            
+            // Reset arrays
             pegs = [];
             walls = [];
             balls = [];
             bucketBodies = [];
             
-            // Stop any continuous dropping
-            stopContinuousDrop();
+            // Reset and restart the renderer with exact same dimensions
+            render.engine = engine;
+            render.options.width = originalWidth;
+            render.options.height = originalHeight;
+            render.canvas.width = originalWidth;
+            render.canvas.height = originalHeight;
+            Matter.Render.run(render);
             
-            // Re-create physics world
-            createBoundaries();
-            createPegs();
-            createBuckets();
+            // Start a new runner
+            const runner = Matter.Runner.create({
+                isFixed: true, 
+                delta: 16
+            });
+            Matter.Runner.run(runner, engine);
             
-            // Note: we're not regenerating bucket values on reset anymore
-            updateBucketDisplay();
+            // Reconnect collision handler
+            Matter.Events.on(engine, 'collisionStart', handleCollision);
             
-            // Reset particles
-            particles = [];
-            initBaseEmbers();
+            // Rebuild the game elements with a slight delay
+            setTimeout(() => {
+                createBoundaries();
+                createPegs();
+                createBuckets();
+                
+                // Update bucket display
+                updateBucketDisplay();
+                
+                // Reset particles
+                particles = [];
+                initBaseEmbers();
+                
+                // Allow reset again
+                isResetting = false;
+            }, 100);
         }
         
         function setupInputHandlers() {
             // Edit mode toggle
-            editModeBtn.addEventListener('click', () => {
+            editModeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 editMode = !editMode;
                 configPanel.style.display = editMode ? 'block' : 'none';
                 editModeBtn.classList.toggle('active', editMode);
@@ -1733,37 +1822,78 @@
             });
             
             // Apply configuration changes
-            applyBtn.addEventListener('click', applyConfigChanges);
-            
-            // Reset game
-            resetBtn.addEventListener('click', resetGame);
-            
-            // Drop button - fixed to work correctly with both click and hold
-            dropBtn.addEventListener('mousedown', startContinuousDrop);
-            dropBtn.addEventListener('mouseup', stopContinuousDrop);
-            dropBtn.addEventListener('mouseleave', stopContinuousDrop);
-            dropBtn.addEventListener('touchstart', e => {
+            applyBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                applyConfigChanges();
+            });
+            
+            // Reset game button
+            resetBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetGame();
+            });
+            
+            // Drop button - for both mouse and touch events
+            const handleDropStart = (e) => {
+                e.preventDefault();
+                if (audioContext) {
+                    // Resume audio context if suspended (needed for mobile)
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                } else {
+                    initAudio();
+                }
                 startContinuousDrop();
-            });
-            dropBtn.addEventListener('touchend', e => {
-                e.preventDefault();
+            };
+            
+            const handleDropEnd = (e) => {
+                if (e) e.preventDefault();
                 stopContinuousDrop();
-            });
+            };
             
-            // Multiple drop buttons
-            drop5xBtn.addEventListener('click', () => dropMultipleBalls(5));
-            drop10xBtn.addEventListener('click', () => dropMultipleBalls(10));
-            drop50xBtn.addEventListener('click', () => dropMultipleBalls(50));
-            drop100xBtn.addEventListener('click', () => dropMultipleBalls(100));
+            // Mouse events
+            dropBtn.addEventListener('mousedown', handleDropStart);
+            dropBtn.addEventListener('mouseup', handleDropEnd);
+            dropBtn.addEventListener('mouseleave', handleDropEnd);
             
-            // Bucket click handlers for editing values
-            document.addEventListener('click', e => {
+            // Touch events
+            dropBtn.addEventListener('touchstart', handleDropStart, { passive: false });
+            dropBtn.addEventListener('touchend', handleDropEnd, { passive: false });
+            dropBtn.addEventListener('touchcancel', handleDropEnd, { passive: false });
+            
+            // Multiple drop buttons with proper touch handling
+            const setupDropButton = (btn, amount) => {
+                const dropHandler = (e) => {
+                    e.preventDefault();
+                    // Resume audio context if needed
+                    if (audioContext && audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    dropMultipleBalls(amount);
+                };
+                
+                btn.addEventListener('click', dropHandler);
+                btn.addEventListener('touchend', dropHandler, { passive: false });
+            };
+            
+            setupDropButton(drop5xBtn, 5);
+            setupDropButton(drop10xBtn, 10);
+            setupDropButton(drop50xBtn, 50);
+            setupDropButton(drop100xBtn, 100);
+            
+            // Bucket click/touch handlers for editing values
+            const bucketClickHandler = (e) => {
                 const bucket = e.target.closest('.bucket');
                 if (bucket && editMode && bucket.classList.contains('edit-bucket')) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     showBucketEditPopup(bucket);
                 }
-            });
+            };
+            
+            document.addEventListener('click', bucketClickHandler);
+            document.addEventListener('touchend', bucketClickHandler, { passive: false });
             
             // Sound toggle
             const soundToggle = document.getElementById('sound-toggle');
@@ -1774,13 +1904,16 @@
             }
             
             // Game overlay click for reset after game over
-            const gameOverlay = document.getElementById('game-overlay');
             if (gameOverlay) {
-                gameOverlay.addEventListener('click', () => {
+                const gameOverHandler = (e) => {
+                    e.preventDefault();
                     if (!gameRunning) {
                         resetGame();
                     }
-                });
+                };
+                
+                gameOverlay.addEventListener('click', gameOverHandler);
+                gameOverlay.addEventListener('touchend', gameOverHandler, { passive: false });
             }
             
             // Color pickers
@@ -1790,7 +1923,8 @@
         function setupColorPickers() {
             const pegColorOptions = document.querySelectorAll('#peg-color-picker .color-option');
             pegColorOptions.forEach(option => {
-                option.addEventListener('click', () => {
+                const colorSelectHandler = (e) => {
+                    e.preventDefault();
                     const color = option.dataset.color;
                     config.pegColor = color;
                     
@@ -1803,7 +1937,10 @@
                     // Visual feedback
                     pegColorOptions.forEach(o => o.style.border = '2px solid rgba(255, 255, 255, 0.2)');
                     option.style.border = '2px solid white';
-                });
+                };
+                
+                option.addEventListener('click', colorSelectHandler);
+                option.addEventListener('touchend', colorSelectHandler, { passive: false });
                 
                 // Set initial selection
                 if (option.dataset.color === config.pegColor) {
@@ -1813,13 +1950,17 @@
             
             const ballColorOptions = document.querySelectorAll('#ball-color-picker .color-option');
             ballColorOptions.forEach(option => {
-                option.addEventListener('click', () => {
+                const colorSelectHandler = (e) => {
+                    e.preventDefault();
                     config.ballColor = option.dataset.color;
                     
                     // Visual feedback
                     ballColorOptions.forEach(o => o.style.border = '2px solid rgba(255, 255, 255, 0.2)');
                     option.style.border = '2px solid white';
-                });
+                };
+                
+                option.addEventListener('click', colorSelectHandler);
+                option.addEventListener('touchend', colorSelectHandler, { passive: false });
                 
                 // Set initial selection
                 if (option.dataset.color === config.ballColor) {
@@ -1858,12 +1999,13 @@
             
             // If the layout has changed, rebuild the board
             if (oldRows !== config.rows || oldColumns !== config.columns || oldBuckets !== config.buckets) {
-                resetGame();
-            } else {
-                // Generate new bucket values if we haven't edited them manually
-                if (!document.querySelector('.bucket-edit-popup')) {
+                // Generate new bucket values if there's a bucket count change
+                if (oldBuckets !== config.buckets) {
+                    config.bucketValues = []; // Clear values to force regeneration
                     generateBucketValues();
                 }
+                resetGame();
+            } else {
                 updateBucketDisplay();
             }
             
@@ -1876,20 +2018,74 @@
         }
         
         function handleResize() {
+            // Store current game state to restore after resize
+            const currentScore = score;
+            const currentBallsLeft = ballsLeft;
+            
+            // Only update dimensions, don't change the game properties
             canvas.width = canvasContainer.offsetWidth;
             canvas.height = canvasContainer.offsetHeight;
             
             particlesCanvas.width = canvasContainer.offsetWidth;
             particlesCanvas.height = canvasContainer.offsetHeight;
             
-            Matter.Render.setPixelRatio(render, window.devicePixelRatio);
-            Matter.Render.setSize(render, canvas.width, canvas.height);
+            // Properly clean up the old engine
+            Matter.Engine.clear(engine);
+            Matter.Render.stop(render);
             
-            // Rebuild the game
-            resetGame();
+            // Set up new engine with same settings
+            engine = Matter.Engine.create({
+                enableSleeping: true
+            });
+            world = engine.world;
+            engine.gravity.y = config.gravity;
+            
+            // Update render with new engine and exact dimensions
+            render.engine = engine;
+            render.options.width = canvas.width;
+            render.options.height = canvas.height;
+            render.canvas.width = canvas.width;
+            render.canvas.height = canvas.height;
+            
+            // Set proper pixel ratio
+            Matter.Render.setPixelRatio(render, window.devicePixelRatio);
+            
+            // Restart the renderer
+            Matter.Render.run(render);
+            
+            // Start a new runner
+            const runner = Matter.Runner.create({
+                isFixed: true,
+                delta: 16
+            });
+            Matter.Runner.run(runner, engine);
+            
+            // Reconnect collision handler
+            Matter.Events.on(engine, 'collisionStart', handleCollision);
+            
+            // Reset arrays
+            pegs = [];
+            walls = [];
+            balls = [];
+            bucketBodies = [];
+            
+            // Rebuild the game elements
+            createBoundaries();
+            createPegs();
+            createBuckets();
+            
+            // Restore game state
+            score = currentScore;
+            ballsLeft = currentBallsLeft;
+            scoreDisplay.textContent = formatNumber(score);
+            ballsLeftDisplay.textContent = ballsLeft;
+            
+            // Reset particles
+            particles = [];
+            initBaseEmbers();
         }
         
-        // Particle System
+        // Initialize base embers
         function initBaseEmbers() {
             baseEmbers = [];
             const numEmbers = 15;
@@ -2035,11 +2231,48 @@
             requestAnimationFrame(updateParticles);
         }
         
-        // Initialize game on load
-        window.addEventListener('load', initGame);
+        // Prevent scrolling when touching the game container and canvas on mobile
+        function preventScrolling() {
+            const preventDefault = e => {
+                e.preventDefault();
+            };
+            
+            document.querySelector('.game-container').addEventListener('touchmove', preventDefault, { passive: false });
+            document.getElementById('plinko-canvas').addEventListener('touchmove', preventDefault, { passive: false });
+            document.getElementById('particles-canvas').addEventListener('touchmove', preventDefault, { passive: false });
+            
+            // Also prevent double-tap zoom
+            document.addEventListener('touchend', e => {
+                const now = Date.now();
+                const lastTouch = document.lastTouch || now - 1000;
+                const delta = now - lastTouch;
+                if (delta < 300) {
+                    e.preventDefault();
+                }
+                document.lastTouch = now;
+            }, { passive: false });
+        }
         
-        // Update input limits
+        // Initialize game when window is loaded
         window.addEventListener('load', () => {
+            // Set fixed dimensions for the game container to ensure consistent physics
+            const gameContainer = document.querySelector('.game-container');
+            const canvasContainer = document.getElementById('canvas-container');
+            
+            // Make sure canvas dimensions are consistent
+            if (canvas) {
+                canvas.width = 800; // Match the container width in CSS
+                canvas.height = 600;
+            }
+            
+            if (particlesCanvas) {
+                particlesCanvas.width = 800;
+                particlesCanvas.height = 600;
+            }
+            
+            // Initialize game
+            initGame();
+            
             // Update input min/max values based on config
             document.getElementById('rows-input').min = 5;
             document.getElementById('rows-input').max = 20;
@@ -2052,6 +2285,19 @@
             document.getElementById('buckets-input').min = 5;
             document.getElementById('buckets-input').max = 15;
             document.getElementById('buckets-input').value = config.buckets;
+            
+            // Prevent scrolling on touch devices
+            preventScrolling();
+            
+            // For mobile, add a click/touch handler to initialize audio on first interaction
+            document.body.addEventListener('click', function initAudioOnFirstInteraction() {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                } else if (!audioContext) {
+                    initAudio();
+                }
+                document.body.removeEventListener('click', initAudioOnFirstInteraction);
+            }, { once: true });
         });
     </script>
 </body>
