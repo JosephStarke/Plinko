@@ -782,7 +782,6 @@
     <!-- Add Final Score Overlay -->
     <div class="final-score-overlay" id="final-score-overlay">
         <div class="final-score-container">
-            <div class="final-score-title">Game Over!</div>
             <div class="final-score-prefix" id="final-score-prefix">$SHIRO Burned:</div>
             <div class="final-score-value" id="final-score-value">0</div>
             <div class="final-score-buttons">
@@ -812,9 +811,9 @@
             editMode: false,
             customPegs: {},  // Store custom peg properties
             physics: {
-                gravity: 0.18,  // Slightly increased gravity
-                bounce: 0.75,   // Slightly increased bounciness
-                friction: 0.98  // Slightly decreased friction
+                gravity: 0.15,   // Decreased from 0.18 to make upward bounces more effective
+                bounce: 0.8,     // Increased from 0.75 for more lively bounces
+                friction: 0.97   // Slightly decreased to maintain momentum longer
             }
         };
 
@@ -827,23 +826,23 @@
                 
                 // Determine value based on position (higher at edges, lower in middle)
                 if (i === 0 || i === config.rows - 1) {
-                    value = '50B'; // Highest value at the edges
+                    value = '100B'; // Doubled from 50B - Highest value at the edges
                 } else {
                     // Calculate distance from center (normalized 0-1)
                     const center = (config.rows - 1) / 2;
                     const distFromCenter = Math.abs(i - center) / center;
                     
-                    // Values decrease toward the center
+                    // Values decrease toward the center (all doubled)
                     if (distFromCenter > 0.8) {
-                        value = '20B';
+                        value = '40B';  // Doubled from 20B
                     } else if (distFromCenter > 0.6) {
-                        value = '10B';
+                        value = '20B';  // Doubled from 10B
                     } else if (distFromCenter > 0.4) {
-                        value = '5B';
+                        value = '10B';  // Doubled from 5B
                     } else if (distFromCenter > 0.2) {
-                        value = '1B';
+                        value = '2B';   // Doubled from 1B
                     } else {
-                        value = '500M';
+                        value = '1B';   // Doubled from 500M
                     }
                 }
                 
@@ -1037,7 +1036,7 @@
             }
         }
 
-        // Drop a new ball if there are balls remaining
+        // Initial ball drop with larger random offset for better ball distribution
         function dropBall() {
             if (config.ballsRemaining <= 0) return false;
             
@@ -1049,14 +1048,17 @@
             const ballRadius = config.ballSize * scale;
             
             // Add more random initial conditions to prevent sticking
-            const randomXOffset = (Math.random() * 6 - 3) * scale;
-            const randomYVelocity = Math.random() * scale + 0.2 * scale;
+            // Wider variation in starting position
+            const randomXOffset = (Math.random() * 10 - 5) * scale;
+            // Random initial velocity for more varied paths
+            const initialXVelocity = (Math.random() * 0.8 - 0.4) * scale;
+            const randomYVelocity = Math.random() * scale + 0.3 * scale;
             
             const ball = {
                 x: canvas.width / 2 + randomXOffset,
                 y: BASE_HEIGHT_PER_ROW * scale, // Start position above first peg
                 radius: ballRadius,
-                velocityX: (Math.random() * 0.4 - 0.2) * scale, // Initial horizontal velocity
+                velocityX: initialXVelocity, 
                 velocityY: randomYVelocity,
                 landed: false,
                 binIndex: -1,
@@ -1175,8 +1177,18 @@
                     ball.stuckFrames = 0;
                 }
                 
+                // Special handling for top row - add extra random motion to avoid getting stuck
+                if (ball.y < BASE_HEIGHT_PER_ROW * 3 * scale && Math.random() < 0.1) {
+                    // Occasional random impulse near the top of the board
+                    ball.velocityX += (Math.random() * 1.0 - 0.5) * scale;
+                    // Occasional slight upward bounce
+                    if (Math.random() < 0.3) {
+                        ball.velocityY -= 0.3 * scale;
+                    }
+                }
+                
                 // Apply a minimum velocity to keep balls moving
-                const minVelocity = 0.3 * scale;
+                const minVelocity = 0.4 * scale;  // Increased from 0.3 to 0.4
                 const currentVelocity = Math.sqrt(ball.velocityX * ball.velocityX + ball.velocityY * ball.velocityY);
                 if (currentVelocity < minVelocity && !ball.landed && ball.y < bins[0].y - ball.radius * 2) {
                     // Calculate multiplier needed to reach min velocity
@@ -1213,21 +1225,35 @@
                         // Improved top hit detection with broader range
                         const isTopHit = angle > -Math.PI/3 && angle < Math.PI/3;
                         
+                        // Random direction for extra push
+                        const randomDirection = Math.random() > 0.5 ? 1 : -1;
+                        
                         // Adjust overlap and push more significantly if hitting top
                         const overlap = minDistance - distance;
-                        const pushFactor = isTopHit ? 1.5 : 1.1;
+                        const pushFactor = isTopHit ? 2.0 : 1.1;  // Increased from 1.5 to 2.0
                         
                         // Move the ball out of the peg with more push
                         ball.x += Math.cos(angle) * overlap * pushFactor;
                         ball.y += Math.sin(angle) * overlap * pushFactor;
+                        
+                        // Add extra horizontal push when hitting top - much stronger now
+                        if (isTopHit) {
+                            // Stronger sideways push (increased from 0.3-0.7 to 0.8-1.5)
+                            ball.x += randomDirection * (0.8 + Math.random() * 0.7) * scale;
+                            
+                            // More likely and stronger upward bounce
+                            if (Math.random() < 0.7) {  // Increased probability from 0.4 to 0.7
+                                ball.velocityY -= (0.5 + Math.random() * 0.3) * scale;  // Increased from 0.3 to 0.5-0.8
+                            }
+                        }
                         
                         // More variation for top hits to prevent sticking
                         const angleVariation = isTopHit ? 0.7 : 0.3;
                         // Slightly bias the deflection angle to avoid getting stuck on top
                         let bounceAngle;
                         if (isTopHit) {
-                            // Calculate a bounce angle biased to either left or right
-                            const bias = (Math.random() > 0.5) ? 0.2 : -0.2;
+                            // Calculate a bounce angle biased to same random direction
+                            const bias = randomDirection * (0.2 + Math.random() * 0.3);
                             bounceAngle = angle + bias + (Math.random() * angleVariation * 2 - angleVariation);
                         } else {
                             bounceAngle = angle + (Math.random() * angleVariation * 2 - angleVariation);
@@ -1249,10 +1275,30 @@
                         
                         // If hitting top, add substantially more downward force and horizontal motion
                         if (isTopHit) {
-                            ball.velocityY += 0.8 * scale; // More downward force
-                            // Add significant horizontal movement in random direction
-                            const horizontalPush = (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.3) * scale;
-                            ball.velocityX += horizontalPush;
+                            // More likely for a significant upward bounce now
+                            if (Math.random() < 0.6) {  // Increased probability for upward bounce
+                                // Add stronger downward force most of the time
+                                ball.velocityY += 0.8 * scale; 
+                            } else {
+                                // Stronger upward bounce (increased from -0.2 to -0.5)
+                                ball.velocityY -= (0.5 + Math.random() * 0.3) * scale; 
+                            }
+                            
+                            // Add significantly more horizontal movement in random direction
+                            // Increased from 0.5-0.9 to 0.8-1.4
+                            ball.velocityX += randomDirection * (0.8 + Math.random() * 0.6) * scale;
+                            
+                            // Special case for first row pins (top pins)
+                            if (peg.row === 0) {
+                                // Extra horizontal force and more frequent upward bounce for first row
+                                ball.velocityX += randomDirection * 0.8 * scale;  // Increased from 0.4 to 0.8
+                                
+                                // Much higher chance of upward bounce for the first row
+                                if (Math.random() < 0.7) {  // Increased from 0.3 to 0.7
+                                    // Stronger upward force (increased from -0.3 to -0.6)
+                                    ball.velocityY -= (0.6 + Math.random() * 0.3) * scale;
+                                }
+                            }
                         }
                         
                         // Visual feedback - flash the peg
@@ -1738,7 +1784,7 @@
                 }
             }
             
-            // Draw bins with borders
+            // Draw bins with borders and dividers
             ctx.strokeStyle = '#FF6B35';
             ctx.lineWidth = 2 * scale;
             
@@ -1748,14 +1794,14 @@
             ctx.lineTo(canvas.width, bins[0].y);
             ctx.stroke();
             
-            // Draw dividers and bin borders
+            // Draw dividers and bin borders with vertical lines extending from bottom
             for (let i = 0; i < bins.length; i++) {
                 const bin = bins[i];
                 
-                // Draw divider line
+                // Draw divider line - extend from bottom of canvas upward past bin line
                 ctx.beginPath();
-                ctx.moveTo(bin.x, bin.y);
-                ctx.lineTo(bin.x, canvas.height);
+                ctx.moveTo(bin.x, canvas.height);
+                ctx.lineTo(bin.x, bin.y - 20 * scale); // Extend slightly above the bin line
                 ctx.stroke();
                 
                 // Draw bin border rectangles
