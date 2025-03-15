@@ -1,0 +1,1047 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Varela Round', 'Comic Sans MS', sans-serif;
+    background-color: #1A1833;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-image: linear-gradient(to bottom, #2D2157, #1A1833);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Remove the paw print background decorations */
+body::before {
+    content: none;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Varela+Round&display=swap');
+
+.title-container {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title-container h1 {
+    font-family: 'Bangers', cursive;
+    font-size: 3.5rem;
+    letter-spacing: 3px;
+    color: #FF4D8D;
+    text-shadow: 0 0 15px rgba(255, 77, 141, 0.8), 
+                 3px 3px 0px #891B46,
+                 -1px -1px 0 #FFF, 
+                 1px -1px 0 #FFF,
+                 -1px 1px 0 #FFF,
+                 1px 1px 0 #FFF;
+    transform: rotate(-1deg);
+    margin: 0;
+}
+
+.animated-title {
+    animation: wiggle 2.5s infinite;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+}
+
+.creator-credit {
+    font-size: 1rem;
+    color: #80D6FF;
+    text-align: center;
+    margin-top: 5px;
+    font-style: italic;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.shiro-icon {
+    width: 80px; /* Doubled from 40px to 80px */
+    height: 80px; /* Doubled from 40px to 80px */
+    margin-right: 10px;
+    animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced score container styling */
+.score-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    background-color: #2E1E5A;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6), 
+                inset 0 0 15px rgba(128, 214, 255, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.4);
+    border: 3px solid #FF4D8D;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.score-container:hover {
+    transform: translateY(-5px);
+}
+
+.score-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #FF4D8D, #80D6FF, #FF4D8D);
+    animation: burnGlow 2s infinite;
+    box-shadow: 0 0 15px 3px rgba(255, 77, 141, 0.7);
+}
+
+@keyframes burnGlow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+#score-prefix {
+    font-weight: bold;
+    color: #80D6FF;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.8);
+    font-size: 1.5rem;
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1px;
+}
+
+#score-value {
+    font-weight: bold;
+    font-size: 2rem;
+    color: #FFDE59;
+    text-shadow: 0 0 10px rgba(255, 222, 89, 0.8), 
+                 0 0 5px rgba(255, 77, 141, 0.5),
+                 2px 2px 0px #973400;
+    animation: scorePulse 2s infinite;
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1px;
+}
+
+@keyframes scorePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.ball-counter {
+    font-size: 1.1rem;
+    color: #FFDE59;
+    margin-left: auto;
+    background-color: #2D1250;
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 2px solid #80D6FF;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), 
+                inset 0 0 8px rgba(128, 214, 255, 0.2);
+    font-weight: bold;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #2E1E5A;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7), 
+                inset 0 0 20px rgba(128, 214, 255, 0.2),
+                0 10px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    border: 4px solid #4E2C99;
+    transition: all 0.3s ease;
+}
+
+.game-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background-image: url('https://i.ibb.co/Fq11XrQ/shiro-logo.png');
+    background-size: 150px;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.03;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.game-container:hover {
+    transform: scale(1.02) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6),
+                inset 0 0 20px rgba(128, 214, 255, 0.3);
+}
+
+.game-header {
+    padding: 15px;
+    background: linear-gradient(to right, #412785, #5936AC);
+    text-align: center;
+    border-bottom: 3px solid #FF4D8D;
+    position: relative;
+    z-index: 1;
+}
+
+.multiplier-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.multiplier-btn {
+    padding: 12px 18px;
+    background-color: #FF4D8D;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Varela Round', sans-serif;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0px 4px 0px #C62E65, 
+                0px 4px 10px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+}
+
+.multiplier-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.multiplier-btn:hover {
+    background-color: #FF6CA3;
+    transform: translateY(-3px);
+    box-shadow: 0px 7px 0px #C62E65, 
+                0px 7px 15px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+.multiplier-btn:hover::after {
+    opacity: 1;
+    left: 150%;
+}
+
+.multiplier-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #C62E65, 
+                0px 2px 5px rgba(0, 0, 0, 0.3),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.2),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+.multiplier-btn.active {
+    background-color: #80D6FF;
+    color: #2E1E5A;
+    box-shadow: 0px 3px 0px #4D95C6, 
+                0px 6px 15px rgba(128, 214, 255, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0px 3px 0px #4D95C6, 
+                           0px 6px 15px rgba(128, 214, 255, 0.4),
+                           inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                           inset 0 2px 5px rgba(255, 255, 255, 0.3); }
+    50% { box-shadow: 0px 3px 0px #4D95C6, 
+                      0px 6px 15px rgba(128, 214, 255, 0.7),
+                      inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                      inset 0 2px 5px rgba(255, 255, 255, 0.3); }
+}
+
+/* Styling for low-ball multiplier buttons - still clickable but visually different */
+.multiplier-btn.low-balls {
+    background-color: #A365DA;
+    opacity: 0.8;
+    box-shadow: 0px 3px 0px #5E359D, 
+                0px 4px 6px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+.multiplier-btn.low-balls:hover {
+    background-color: #B77AE4;
+    opacity: 0.9;
+}
+
+canvas {
+    width: 100%;
+    background-color: #1A1140;
+    display: block;
+    border-top: 2px solid #4E2C99;
+    border-bottom: 2px solid #4E2C99;
+    position: relative;
+    z-index: 1;
+}
+
+.game-footer {
+    padding: 15px;
+    text-align: center;
+    background: linear-gradient(to right, #412785, #5936AC);
+    position: relative;
+    z-index: 1;
+}
+
+/* Modified config-panel to display as a grid with 3 items per row */
+.config-panel {
+    width: 100%;
+    max-width: 800px;
+    background-color: #231553;
+    padding: 25px;
+    margin-top: 20px;
+    border-radius: 20px;
+    border: 3px solid #4E2C99;
+    display: none;
+    margin-bottom: 30px;
+    border-top: 3px solid #FF4D8D;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.6), 
+                inset 0 0 20px rgba(128, 214, 255, 0.15);
+    position: relative;
+}
+
+/* Remove panel background image */
+.config-panel::before {
+    content: none;
+}
+
+.config-panel.open {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+/* Make the editor help text span all columns */
+.config-panel .editor-help {
+    grid-column: 1 / span 3;
+    margin-bottom: 10px;
+}
+
+/* Responsive fallback for mobile */
+@media (max-width: 768px) {
+    .config-panel.open {
+        grid-template-columns: 1fr;
+    }
+    
+    .config-panel .editor-help,
+    .config-panel div[style*="display: flex"] {
+        grid-column: 1;
+    }
+}
+
+.config-columns {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.config-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .config-columns {
+        flex-direction: column;
+    }
+}
+
+.config-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: rgba(78, 44, 153, 0.3);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2), 
+                inset 0 0 8px rgba(128, 214, 255, 0.1);
+    border: 1px solid rgba(128, 214, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.config-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), 
+                inset 0 0 12px rgba(128, 214, 255, 0.2);
+    border: 1px solid rgba(128, 214, 255, 0.2);
+}
+
+.config-item label {
+    display: block;
+    font-weight: bold;
+    color: #80D6FF;
+    font-size: 1.1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    position: relative;
+}
+
+.config-item label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(to right, #80D6FF, transparent);
+}
+
+.config-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Removed slider specific styles as we're using number inputs now */
+/* The following styles apply to all inputs */
+
+input[type="text"], input[type="number"] {
+    padding: 12px;
+    border: 2px solid #4E2C99;
+    background-color: #1A1140;
+    color: white;
+    border-radius: 10px;
+    width: 100%;
+    font-family: 'Varela Round', sans-serif;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.5px;
+}
+
+input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: #FF4D8D;
+    box-shadow: 0 0 12px rgba(255, 77, 141, 0.4), 
+                inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Extra styling for number inputs */
+input[type="number"] {
+    text-align: center;
+    font-weight: bold;
+    color: #FFDE59;
+    font-size: 1.2rem;
+    background-image: linear-gradient(to bottom, #241553, #1A1140);
+}
+
+/* Custom number input container with arrows */
+.number-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.number-input-container input[type="number"] {
+    flex: 1;
+    padding-right: 30px; /* Make room for the arrows */
+}
+
+.number-arrows {
+    position: absolute;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    justify-content: space-between;
+}
+
+.arrow-up, .arrow-down {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4E2C99;
+    border-radius: 4px;
+    border: none;
+    font-size: 10px;
+    color: #FFDE59;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.arrow-up span, .arrow-down span {
+    line-height: 1;
+    display: block;
+}
+
+.arrow-up:hover, .arrow-down:hover {
+    background-color: #FF4D8D;
+    transform: scale(1.1);
+}
+
+.arrow-up:active, .arrow-down:active {
+    transform: scale(0.95);
+}
+
+/* Remove default number input arrows in Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove default number input arrows in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="text"]::placeholder, input[type="number"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.color-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.color-option::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.3) 0%, 
+                rgba(255, 255, 255, 0) 50%, 
+                rgba(0, 0, 0, 0.1) 100%);
+    opacity: 0.5;
+}
+
+.color-option:hover {
+    transform: scale(1.3) translateY(-3px);
+    border-color: white;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 
+                0 0 15px rgba(128, 214, 255, 0.5);
+    z-index: 2;
+}
+
+.color-option:active {
+    transform: scale(0.95);
+}
+
+button {
+    padding: 12px 18px;
+    background-color: #FF4D8D;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0px 4px 0px #C62E65, 
+                0px 5px 10px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+button:hover {
+    background-color: #FF6CA3;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0px 7px 0px #C62E65, 
+                0px 7px 15px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+button:hover::after {
+    opacity: 1;
+    left: 150%;
+}
+
+button:active {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0px 2px 0px #C62E65, 
+                0px 2px 5px rgba(0, 0, 0, 0.3),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.2),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+#edit-config {
+    background-color: #80D6FF;
+    color: #2E1E5A;
+    box-shadow: 0px 4px 0px #4D95C6, 
+                0px 5px 10px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+#edit-config:hover {
+    background-color: #A3E0FF;
+    box-shadow: 0px 7px 0px #4D95C6, 
+                0px 7px 15px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+#edit-config:active {
+    box-shadow: 0px 2px 0px #4D95C6, 
+                0px 2px 5px rgba(0, 0, 0, 0.3),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.1),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+#edit-config.active {
+    background-color: #FFDE59;
+    color: #2E1E5A; 
+    box-shadow: 0px 4px 0px #D6A518, 
+                0px 5px 10px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+#edit-config.active:hover {
+    background-color: #FFE77D;
+    box-shadow: 0px 7px 0px #D6A518, 
+                0px 7px 15px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+.hole-editor {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2A1A15;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    display: none;
+    border: 2px solid #4A2F2A;
+}
+
+.hole-editor.open {
+    display: block;
+}
+
+.hole-editor h3 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #FF8C5A;
+}
+
+.hole-editor-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.peg-editor {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2A1A15;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    display: none;
+    border: 2px solid #4A2F2A;
+    width: 280px;
+}
+
+.peg-editor.open {
+    display: block;
+}
+
+.peg-editor h3 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #FF8C5A;
+}
+
+.peg-editor-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.peg-editor-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 99;
+    display: none;
+}
+
+.overlay.open {
+    display: block;
+}
+
+.sound-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-label {
+    color: #FFA15A;
+    font-size: 1rem;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 22px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #3A2520;
+    border: 2px solid #4A2F2A;
+    transition: .4s;
+    border-radius: 22px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 2px;
+    background-color: #FF6B35;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #2A1A15;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+}
+
+.editor-help {
+    color: #FF8C5A;
+    margin: 10px 0;
+    font-style: italic;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.7; }
+}
+
+.win-display {
+    animation: kawaii-glow 1s ease-in-out;
+    pointer-events: none;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #FFDE59;
+    text-shadow: 0 0 15px rgba(255, 222, 89, 0.8),
+                 2px 2px 0 #FF4D8D;
+    font-family: 'Bangers', cursive;
+    letter-spacing: 2px;
+    transform: rotate(-5deg);
+    position: relative;
+}
+
+.win-display::before {
+    content: '🔥';
+    position: absolute;
+    font-size: 1.5rem;
+    left: -20px;
+    top: -10px;
+    transform: rotate(15deg);
+    animation: spin-emoji 0.5s ease-in-out;
+}
+
+.win-display::after {
+    content: '✨';
+    position: absolute;
+    font-size: 1.5rem;
+    right: -20px;
+    top: -10px;
+    transform: rotate(-15deg);
+    animation: sparkle 1s infinite alternate;
+}
+
+@keyframes kawaii-glow {
+    0% { transform: rotate(-5deg) scale(0.5); opacity: 0; }
+    25% { transform: rotate(-5deg) scale(1.3); opacity: 1; }
+    50% { transform: rotate(-5deg) scale(1.1); }
+    75% { transform: rotate(-5deg) scale(1.2); }
+    100% { transform: rotate(-5deg) scale(1); }
+}
+
+@keyframes spin-emoji {
+    0% { transform: scale(0) rotate(0deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes sparkle {
+    0% { opacity: 0.7; transform: rotate(-15deg) scale(0.8); }
+    100% { opacity: 1; transform: rotate(-15deg) scale(1.2); }
+}
+
+/* Final Score Display */
+.final-score-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(26, 17, 64, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.final-score-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.final-score-container {
+    background: linear-gradient(to bottom, #412785, #2E1E5A);
+    padding: 40px 50px;
+    border-radius: 20px;
+    text-align: center;
+    border: 4px solid #FF4D8D;
+    box-shadow: 0 0 30px rgba(255, 77, 141, 0.6), 
+                inset 0 0 20px rgba(128, 214, 255, 0.2);
+    transform: scale(0.9);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.final-score-overlay.visible .final-score-container {
+    transform: scale(1);
+}
+
+.final-score-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #FF4D8D;
+    text-shadow: 0 0 15px rgba(255, 77, 141, 0.8), 
+                 3px 3px 0px #891B46;
+    font-family: 'Bangers', cursive;
+    letter-spacing: 2px;
+}
+
+.final-score-value {
+    font-size: 4rem;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #FFDE59;
+    text-shadow: 0 0 15px rgba(255, 222, 89, 0.8), 
+                 0 0 10px rgba(255, 77, 141, 0.6);
+    font-family: 'Bangers', cursive;
+    letter-spacing: 2px;
+}
+
+.final-score-prefix {
+    font-size: 2rem;
+    color: #80D6FF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    margin-bottom: 10px;
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.final-score-prefix img {
+    width: 80px;
+    height: 80px;
+    margin-right: 15px;
+    animation: spin 10s linear infinite;
+}
+
+.final-score-buttons {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.final-score-btn {
+    padding: 15px 30px;
+    font-size: 1.3rem;
+    background-color: #80D6FF;
+    color: #2E1E5A;
+    box-shadow: 0px 4px 0px #4D95C6, 
+                0px 4px 10px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-family: 'Varela Round', sans-serif;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.final-score-btn:hover {
+    background-color: #A3E0FF;
+    transform: translateY(-3px);
+    box-shadow: 0px 7px 0px #4D95C6, 
+                0px 7px 15px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.2);
+}
+
+.final-score-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #4D95C6, 
+                0px 2px 5px rgba(0, 0, 0, 0.3),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.1),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Fire text effect for score prefix */
+.fire-text {
+    text-shadow: 0 -0.05em 0.2em #FFF, 
+                 0.01em -0.02em 0.15em #FE0, 
+                 0.01em -0.05em 0.15em #FC0, 
+                 0.02em -0.15em 0.2em #F90, 
+                 0.04em -0.2em 0.3em #F70, 
+                 0.05em -0.25em 0.4em #F70, 
+                 0.06em -0.2em 0.9em #F50, 
+                 0.1em -0.1em 1.0em #F40;
+    color: #FFF;
+    animation: fire-pulse 2s infinite alternate;
+    transform-origin: center;
+}
+
+@keyframes fire-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
