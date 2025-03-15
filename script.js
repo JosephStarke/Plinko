@@ -87,7 +87,7 @@ const config = {
         bounce: 0.65,        // Reduced bounce coefficient to prevent edge shooting
         friction: 0.99       // Reduced friction to maintain momentum better
     },
-    globalBounciness: 0.65   // Global bounce setting (can be configured)
+    globalBounciness: 0.8   // Global bounce setting (can be configured)
 };
 
 // Game State
