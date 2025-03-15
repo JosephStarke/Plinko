@@ -2,432 +2,304 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PLINKO BURN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko Burn</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+            background-color: #2C1B18;
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #2C1B18;
-            color: white;
-            margin: 0;
-            padding: 10px;
-            overflow-x: hidden;
-            background-image: linear-gradient(to bottom, #3B1D15, #2C1B18);
             min-height: 100vh;
-            touch-action: manipulation;
+            padding: 20px;
+            background-image: linear-gradient(to bottom, #3B1D15, #2C1B18);
         }
 
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 5px;
-            color: #FF6B35;
-            text-shadow: 0 0 20px rgba(255, 107, 53, 0.8), 4px 4px 0px #7A1C00;
+        .title-container {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 10px;
             text-align: center;
-            letter-spacing: 2px;
-            transform: rotate(-2deg);
         }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
-            }
+
+        .title-container h1 {
+            font-size: 2.5rem;
+            color: #FF6B35;
+            text-shadow: 0 0 15px rgba(255, 107, 53, 0.8), 3px 3px 0px #7A1C00;
+            transform: rotate(-1deg);
         }
-        
+
         .creator-credit {
             font-size: 1rem;
             color: #FFA15A;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-style: italic;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
         }
 
-        .game-container {
-            position: relative;
-            width: 800px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #3B2723;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 107, 53, 0.3);
-            padding: 20px;
-            border: 5px solid #4A2F2A;
-            box-sizing: border-box;
-            transform-origin: top center;
-        }
-        
-        /* Scale down the entire game on smaller screens while keeping original dimensions */
-        @media (max-width: 840px) {
-            .game-container {
-                transform: scale(0.95);
-                margin-bottom: 20px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .game-container {
-                transform: scale(0.85);
-                margin-bottom: 40px;
-            }
-        }
-        
-        @media (max-width: 680px) {
-            .game-container {
-                transform: scale(0.75);
-                margin-bottom: 60px;
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .game-container {
-                transform: scale(0.65);
-                margin-bottom: 80px;
-            }
-        }
-        
-        @media (max-width: 520px) {
-            .game-container {
-                transform: scale(0.55);
-                margin-bottom: 100px;
-            }
-        }
-        
-        @media (max-width: 440px) {
-            .game-container {
-                transform: scale(0.45);
-                margin-bottom: 120px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .game-container {
-                transform: scale(0.38);
-                margin-bottom: 140px;
-            }
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
+        /* Enhanced score container styling */
+        .score-container {
             width: 100%;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 2;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .score, .balls-left {
-            font-size: 1.5rem;
-            background-color: #2A1A15;
-            padding: 10px 20px;
-            border-radius: 15px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 107, 53, 0.3);
-            font-weight: bold;
-            transition: all 0.5s ease;
-            flex: 1;
-            min-width: 120px;
-            text-align: center;
-        }
-        
-        .score.game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            padding: 30px 40px;
-            background-color: rgba(42, 26, 21, 0.9);
-            border: 5px solid #FF6B35;
-            z-index: 100;
-            width: 80%;
-            text-align: center;
-            animation: flameFlicker 2s infinite alternate;
-        }
-        
-        @keyframes flameFlicker {
-            0% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.6); }
-            100% { box-shadow: 0 0 40px rgba(255, 107, 53, 0.9); }
-        }
-
-        .score span, .balls-left span {
-            color: #FF8C5A;
-            font-weight: bold;
-        }
-        
-        .drop-buttons {
+            max-width: 800px;
             display: flex;
             justify-content: center;
-            gap: 8px;
-            width: 100%;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        #config-panel {
-            width: 100%;
-            background-color: #2A1A15;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 107, 53, 0.2);
-            display: none;
-            transition: all 0.3s ease;
-            overflow-x: hidden;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .config-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .config-item label {
-            margin-bottom: 8px;
-            font-size: 1rem;
-            color: #FF8C5A;
-        }
-
-        .config-item input, .config-item select, .config-item textarea {
-            padding: 10px;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            background-color: #3B2723;
+            padding: 12px 15px;
             border-radius: 10px;
-            border: 2px solid #4A2F2A;
-            background-color: #3A2520;
-            color: white;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
-            font-size: 16px; /* Better size for mobile inputs */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 107, 53, 0.3);
+            border: 2px solid #FF6B35;
+            position: relative;
+            overflow: hidden;
         }
 
-        .config-item input:focus, .config-item select:focus, .config-item textarea:focus {
-            outline: none;
-            border-color: #FF6B35;
-            box-shadow: 0 0 10px rgba(255, 107, 53, 0.6);
+        .score-container::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B35, #FFC107, #FF6B35);
+            animation: burnGlow 2s infinite;
+            box-shadow: 0 0 10px 2px rgba(255, 107, 53, 0.7);
         }
 
-        .action-btn {
-            margin-top: 5px;
-            padding: 12px 20px;
-            border: none;
+        @keyframes burnGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        #score-prefix {
+            font-weight: bold;
+            color: #FFA15A;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            font-size: 1.4rem;
+        }
+
+        #score-value {
+            font-weight: bold;
+            font-size: 1.6rem;
+            color: #FFC107;
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.8), 0 0 5px rgba(255, 107, 53, 0.5);
+            animation: scorePulse 2s infinite;
+        }
+
+        @keyframes scorePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .ball-counter {
+            font-size: 1rem;
+            color: #FFA15A;
+            margin-left: auto;
+            background-color: #2A1A15;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #FF8C5A;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #3B2723;
             border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 107, 53, 0.2);
+            position: relative;
+            border: 3px solid #4A2F2A;
+            transition: transform 0.3s;
+        }
+
+        .game-container:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .game-header {
+            padding: 15px;
+            background: linear-gradient(to right, #3B2723, #4A2F2A);
+            text-align: center;
+        }
+
+        .multiplier-controls {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .multiplier-btn {
+            padding: 10px 15px;
             background-color: #FF6B35;
             color: white;
-            font-weight: bold;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 14px;
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
-            font-size: 1.1rem;
-            box-shadow: 0px 4px 0px #7A1C00, 0px 6px 10px rgba(0, 0, 0, 0.4);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
-            min-width: 80px;
-            white-space: nowrap;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0px 3px 0px #7A1C00, 0px 4px 6px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
         }
 
-        .action-btn:hover {
+        .multiplier-btn:hover {
             background-color: #FF8C5A;
             transform: translateY(-2px);
-            box-shadow: 0px 6px 0px #7A1C00, 0px 10px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0px 5px 0px #7A1C00, 0px 7px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .action-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0px 2px 0px #7A1C00, 0px 4px 5px rgba(0, 0, 0, 0.4);
+        .multiplier-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0px 2px 0px #7A1C00, 0px 3px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .edit-mode {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 15px;
-            background-color: #2196F3;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
-            font-size: 1.1rem;
-            box-shadow: 0px 4px 0px #0B5394, 0px 6px 10px rgba(0, 0, 0, 0.4);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+        .multiplier-btn.active {
+            background-color: #FF8C5A;
+            box-shadow: 0px 3px 0px #7A1C00, 0px 6px 10px rgba(255, 107, 53, 0.4);
         }
 
-        .edit-mode:hover {
-            background-color: #4DABF5;
-            transform: translateY(-2px);
-            box-shadow: 0px 6px 0px #0B5394, 0px 10px 20px rgba(0, 0, 0, 0.4);
+        /* Styling for low-ball multiplier buttons - still clickable but visually different */
+        .multiplier-btn.low-balls {
+            background-color: #FF6B35;
+            opacity: 0.8;
+            box-shadow: 0px 3px 0px #7A1C00, 0px 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .edit-mode:active {
-            transform: translateY(2px);
-            box-shadow: 0px 2px 0px #0B5394, 0px 4px 5px rgba(0, 0, 0, 0.4);
-        }
-
-        .edit-mode.active {
-            background-color: #F44336;
-            box-shadow: 0px 4px 0px #B71C1C, 0px 6px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        .edit-mode.active:hover {
-            background-color: #FF5252;
-            box-shadow: 0px 6px 0px #B71C1C, 0px 10px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        #canvas-container {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 107, 53, 0.2);
-            background-color: #241914;
-            box-sizing: border-box;
+        .multiplier-btn.low-balls:hover {
+            background-color: #FF8C5A;
+            opacity: 0.9;
         }
 
         canvas {
+            width: 100%;
+            background-color: #241914;
             display: block;
-            background-color: transparent;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
         }
 
-        #particles-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        #drop-zones {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            display: flex;
-            justify-content: space-around;
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-
-        .drop-zone {
-            width: 30px;
-            height: 30px;
-            background-color: rgba(255, 107, 53, 0.3);
-            border: 2px solid #FF6B35;
-            border-radius: 50%;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: white;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .drop-zone:hover {
-            background-color: rgba(255, 107, 53, 0.6);
-            transform: scale(1.1);
-        }
-
-        .buckets {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-        }
-
-        .bucket {
-            width: 60px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #FFD700;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .bucket-hole {
-            width: 50px;
-            height: 10px;
-            background-color: transparent;
-            border-bottom: 3px solid #FF6B35;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(255, 107, 53, 0.4);
-        }
-
-        .bucket-hole::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 3px;
-            background-color: rgba(255, 107, 53, 0.5);
-            bottom: -3px;
-            left: 0;
-            filter: blur(2px);
-        }
-
-        .bucket-label {
-            position: absolute;
-            bottom: 30px;
-            color: #FFA15A;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-            font-size: 1rem;
+        .game-footer {
+            padding: 15px;
             text-align: center;
+            background: linear-gradient(to right, #3B2723, #4A2F2A);
+        }
+
+        /* Modified config-panel to display below the game */
+        .config-panel {
             width: 100%;
-            transition: all 0.3s ease;
+            max-width: 800px;
+            background-color: #2A1A15;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 15px;
+            border: 3px solid #4A2F2A;
+            display: none;
+            margin-bottom: 30px;
+            border-top: 2px solid #FF6B35;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 107, 53, 0.2);
         }
 
-        .bucket:hover {
-            transform: scale(1.05);
+        .config-panel.open {
+            display: block;
         }
 
-        .bucket.edit-bucket:hover .bucket-label {
-            color: #4DABF5;
-            text-decoration: underline;
+        .config-item {
+            margin-bottom: 15px;
+        }
+
+        .config-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #FF8C5A;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-container span {
+            min-width: 30px;
+            text-align: right;
+            color: #FFA15A;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #3A2520;
+            outline: none;
+            border: 1px solid #4A2F2A;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF6B35;
+            cursor: pointer;
+            border: 1px solid #7A1C00;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF6B35;
+            cursor: pointer;
+            border: 1px solid #7A1C00;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            border: 1px solid #4A2F2A;
+            background-color: #3A2520;
+            color: white;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 8px rgba(255, 107, 53, 0.6);
         }
 
         .color-picker {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .color-option {
-            width: 25px;
-            height: 25px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.2s;
@@ -439,184 +311,162 @@
             border-color: white;
         }
 
-        .glow {
-            animation: glow 0.5s ease-in-out;
-        }
-
-        @keyframes glow {
-            0% { filter: brightness(1); }
-            50% { filter: brightness(1.5) drop-shadow(0 0 10px #FF6B35); }
-            100% { filter: brightness(1); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.7; }
-        }
-
-        .pulse {
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-
-        /* Updated score popup animations for middle and surrounding buckets */
-        @keyframes centerScorePopup {
-            0% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.9)); }
-            50% { transform: translateY(-60px) scale(1.7); opacity: 0.8; filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.8)); }
-            80% { transform: translateY(-80px) scale(2.2); opacity: 0.5; filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.7)); }
-            100% { transform: translateY(-100px) scale(2.5); opacity: 0; filter: drop-shadow(0 0 30px rgba(255, 107, 53, 0.5)); }
-        }
-
-        @keyframes adjacentScorePopup {
-            0% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.8)); }
-            50% { transform: translateY(-50px) scale(1.4); opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.7)); }
-            80% { transform: translateY(-70px) scale(1.7); opacity: 0.4; filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6)); }
-            100% { transform: translateY(-80px) scale(1.9); opacity: 0; filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.4)); }
-        }
-
-        @keyframes regularScorePopup {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            50% { transform: translateY(-25px) scale(1.1); opacity: 0.6; }
-            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
-        }
-
-        .score-popup.center {
-            animation: centerScorePopup 2s forwards;
-            color: #FFD700;
-            font-size: 1.8rem;
-            z-index: 25;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-        }
-
-        .score-popup.adjacent {
-            animation: adjacentScorePopup 1.75s forwards;
-            color: #FFA500;
-            font-size: 1.6rem;
-            z-index: 24;
-            text-shadow: 0 0 8px rgba(255, 165, 0, 0.6);
-        }
-
-        .score-popup.regular {
-            animation: regularScorePopup 1s forwards;
-            font-size: 1.4rem;
-        }
-
-        /* Bucket hole glow effects */
-        @keyframes bucketGlowCenter {
-            0% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.7); }
-            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.9), 0 0 40px rgba(255, 107, 53, 0.6); }
-            100% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.7); }
-        }
-
-        @keyframes bucketGlowAdjacent {
-            0% { box-shadow: 0 0 8px rgba(255, 107, 53, 0.6); }
-            50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 107, 53, 0.5); }
-            100% { box-shadow: 0 0 8px rgba(255, 107, 53, 0.6); }
-        }
-
-        @keyframes bucketGlowRegular {
-            0% { box-shadow: 0 0 5px rgba(255, 107, 53, 0.4); }
-            50% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.6); }
-            100% { box-shadow: 0 0 5px rgba(255, 107, 53, 0.4); }
-        }
-
-        .bucket-hole.glow-center {
-            animation: bucketGlowCenter 2s ease-in-out;
-        }
-
-        .bucket-hole.glow-adjacent {
-            animation: bucketGlowAdjacent 1.75s ease-in-out;
-        }
-
-        .bucket-hole.glow-regular {
-            animation: bucketGlowRegular 1s ease-in-out;
-        }
-
-        .bucket-edit-popup {
-            position: absolute;
-            top: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2A1A15;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            border: 2px solid #4A2F2A;
-            width: 150px;
-        }
-
-        .bucket-edit-popup input {
-            background-color: #3A2520;
-            border: 1px solid #4A2F2A;
-            border-radius: 5px;
-            color: white;
-            padding: 10px;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
-            font-size: 16px;
-        }
-
-        .bucket-edit-popup button {
+        button {
+            padding: 10px 15px;
             background-color: #FF6B35;
-            border: none;
-            border-radius: 5px;
             color: white;
-            padding: 10px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
-            font-size: 16px;
-            -webkit-tap-highlight-color: transparent;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            box-shadow: 0px 3px 0px #7A1C00, 0px 4px 6px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
         }
 
-        .bucket-edit-popup button:hover {
+        button:hover {
             background-color: #FF8C5A;
+            transform: translateY(-2px);
+            box-shadow: 0px 5px 0px #7A1C00, 0px 7px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .editor-help {
-            color: #FF8C5A;
-            margin-top: 10px;
-            font-style: italic;
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0px 2px 0px #7A1C00, 0px 3px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #edit-config {
+            background-color: #2196F3;
+            box-shadow: 0px 3px 0px #0B5394, 0px 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #edit-config:hover {
+            background-color: #4DABF5;
+            box-shadow: 0px 5px 0px #0B5394, 0px 7px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #edit-config:active {
+            box-shadow: 0px 2px 0px #0B5394, 0px 3px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #edit-config.active {
+            background-color: #F44336;
+            box-shadow: 0px 3px 0px #B71C1C, 0px 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #edit-config.active:hover {
+            background-color: #FF5252;
+            box-shadow: 0px 5px 0px #B71C1C, 0px 7px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hole-editor {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #2A1A15;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            display: none;
+            border: 2px solid #4A2F2A;
+        }
+
+        .hole-editor.open {
+            display: block;
+        }
+
+        .hole-editor h3 {
+            margin-bottom: 15px;
             text-align: center;
-            font-size: 1rem;
+            color: #FF8C5A;
         }
 
-        .bottom-controls {
+        .hole-editor-buttons {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
             margin-top: 15px;
-            justify-content: center;
-            width: 100%;
-            flex-wrap: wrap;
         }
-        
+
+        .peg-editor {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #2A1A15;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            display: none;
+            border: 2px solid #4A2F2A;
+            width: 280px;
+        }
+
+        .peg-editor.open {
+            display: block;
+        }
+
+        .peg-editor h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FF8C5A;
+        }
+
+        .peg-editor-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .peg-editor-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+            display: none;
+        }
+
+        .overlay.open {
+            display: block;
+        }
+
         .sound-controls {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             margin-top: 15px;
-            flex-wrap: wrap;
             justify-content: center;
         }
         
         .toggle-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .toggle-label {
             color: #FFA15A;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 46px;
+            height: 22px;
         }
         
         .toggle-switch input {
@@ -635,15 +485,15 @@
             background-color: #3A2520;
             border: 2px solid #4A2F2A;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 22px;
         }
         
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
+            height: 14px;
+            width: 14px;
+            left: 3px;
             bottom: 2px;
             background-color: #FF6B35;
             transition: .4s;
@@ -655,368 +505,436 @@
         }
         
         input:checked + .toggle-slider:before {
-            transform: translateX(26px);
+            transform: translateX(22px);
         }
 
-        @keyframes ember {
-            0% { opacity: 0.8; transform: translateY(0) scale(1); }
-            50% { opacity: 0.6; transform: translateY(-15px) scale(0.8); }
-            100% { opacity: 0; transform: translateY(-30px) scale(0.2); }
+        .editor-help {
+            color: #FF8C5A;
+            margin: 10px 0;
+            font-style: italic;
+            text-align: center;
+            font-size: 0.9rem;
         }
 
-        .ember-explosion {
-            position: absolute;
-            bottom: 20px;
-            width: 60px;
-            height: 60px;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        .win-display {
+            animation: glow 0.5s ease-in-out;
             pointer-events: none;
-            z-index: 15;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
         }
         
-        /* Sound visualization */
-        .sound-wave {
-            display: flex;
-            align-items: center;
-            height: 20px;
-            gap: 3px;
+        @keyframes glow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5) drop-shadow(0 0 10px #FF6B35); }
+            100% { filter: brightness(1); }
         }
         
-        .sound-bar {
-            width: 3px;
-            background-color: #FF6B35;
-            border-radius: 3px;
-            animation: soundWave 1s infinite ease-in-out alternate;
-            animation-delay: calc(var(--i) * 0.1s);
-        }
-        
-        @keyframes soundWave {
-            0% { height: 5px; }
-            100% { height: 20px; }
-        }
-        
-        /* Game overlay for handling game over state */
-        .game-overlay {
-            position: absolute;
+        /* Final Score Display */
+        .final-score-overlay {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            display: none;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 50;
-            cursor: pointer;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        
+        .final-score-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .final-score-container {
+            background: linear-gradient(to bottom, #3B1D15, #2C1B18);
+            padding: 30px 40px;
+            border-radius: 15px;
+            text-align: center;
+            border: 4px solid #FF6B35;
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.7), inset 0 0 20px rgba(255, 107, 53, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .final-score-overlay.visible .final-score-container {
+            transform: scale(1);
+        }
+        
+        .final-score-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #FF6B35;
+            text-shadow: 0 0 15px rgba(255, 107, 53, 0.8), 3px 3px 0px #7A1C00;
+        }
+        
+        .final-score-value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #FFC107;
+            text-shadow: 0 0 15px rgba(255, 193, 7, 0.8), 0 0 10px rgba(255, 107, 53, 0.6);
+        }
+        
+        .final-score-prefix {
+            font-size: 2rem;
+            color: #FFA15A;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            margin-bottom: 10px;
+        }
+        
+        .final-score-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .final-score-btn {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+        }
+
+        /* Fire text effect for score prefix */
+        .fire-text {
+            text-shadow: 0 -0.05em 0.2em #FFF, 0.01em -0.02em 0.15em #FE0, 0.01em -0.05em 0.15em #FC0, 0.02em -0.15em 0.2em #F90, 0.04em -0.2em 0.3em #F70, 0.05em -0.25em 0.4em #F70, 0.06em -0.2em 0.9em #F50, 0.1em -0.1em 1.0em #F40;
+            color: #FFF;
         }
     </style>
 </head>
 <body>
-    <h1 id="game-title">PLINKO BURN</h1>
-    <div class="creator-credit">By Jozzuph</div>
-    
+    <div class="title-container">
+        <h1 id="game-title">PLINKO BURN</h1>
+        <div class="creator-credit">By Jozzuph</div>
+    </div>
+
+    <div class="score-container">
+        <span id="score-prefix" class="fire-text">$SHIRO Burned:</span>
+        <span id="score-value">0</span>
+        <span class="ball-counter">Balls: <span id="ball-count">50</span> / <span id="max-balls">50</span></span>
+    </div>
+
     <div class="game-container">
-        <div class="stats">
-            <div class="score"><span id="score-label">$SHIRO Burned</span>: <span id="score-display">0</span></div>
-            <div class="balls-left">Balls: <span id="balls-left-display">10</span></div>
-        </div>
-        
-        <div class="drop-buttons">
-            <button id="drop-btn" class="action-btn">Drop Ball</button>
-            <button id="drop-5x-btn" class="action-btn">Drop 5x</button>
-            <button id="drop-10x-btn" class="action-btn">Drop 10x</button>
-            <button id="drop-50x-btn" class="action-btn">Drop 50x</button>
-            <button id="drop-100x-btn" class="action-btn">Drop 100x</button>
-        </div>
-        
-        <div id="canvas-container">
-            <canvas id="plinko-canvas"></canvas>
-            <canvas id="particles-canvas"></canvas>
-            <div class="buckets" id="buckets-container"></div>
-            <div class="game-overlay" id="game-overlay"></div>
-        </div>
-        
-        <div class="bottom-controls">
-            <button id="reset-btn" class="action-btn">Reset Game</button>
-            <button id="edit-mode-btn" class="edit-mode">Edit Mode</button>
-        </div>
-        
-        <div class="sound-controls">
-            <div class="toggle-container">
-                <span class="toggle-label">Sound FX</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="sound-toggle" checked>
-                    <span class="toggle-slider"></span>
-                </label>
+        <div class="game-header">
+            <div class="multiplier-controls">
+                <button class="multiplier-btn" data-multiplier="1">x1</button>
+                <button class="multiplier-btn" data-multiplier="5">x5</button>
+                <button class="multiplier-btn" data-multiplier="10">x10</button>
+                <button class="multiplier-btn" data-multiplier="50">x50</button>
+                <button class="multiplier-btn" data-multiplier="100">x100</button>
             </div>
         </div>
         
-        <div id="config-panel">
-            <div class="editor-help">Tip: Click directly on bucket values to edit them when in Edit Mode!</div>
-            <div class="config-grid">
-                <div class="config-item">
-                    <label for="rows-input">Rows of Pegs</label>
-                    <input type="number" id="rows-input" min="5" max="15" value="8">
-                </div>
-                <div class="config-item">
-                    <label for="columns-input">Columns of Pegs</label>
-                    <input type="number" id="columns-input" min="5" max="20" value="11">
-                </div>
-                <div class="config-item">
-                    <label for="buckets-input">Number of Buckets</label>
-                    <input type="number" id="buckets-input" min="5" max="15" value="15">
-                </div>
-                <div class="config-item">
-                    <label for="ball-size-input">Ball Size</label>
-                    <input type="number" id="ball-size-input" min="5" max="15" value="10">
-                </div>
-                <div class="config-item">
-                    <label for="restitution-input">Peg Bounciness</label>
-                    <input type="number" id="restitution-input" min="0" max="1" step="0.1" value="0.5">
-                </div>
-                <div class="config-item">
-                    <label for="gravity-input">Gravity</label>
-                    <input type="number" id="gravity-input" min="0.1" max="2" step="0.1" value="1">
-                </div>
-                <div class="config-item">
-                    <label for="balls-input">Starting Balls</label>
-                    <input type="number" id="balls-input" min="1" value="10">
-                </div>
-                <div class="config-item">
-                    <label for="score-label-input">Score Label</label>
-                    <input type="text" id="score-label-input" value="$SHIRO Burned">
-                </div>
-                <div class="config-item">
-                    <label for="game-title-input">Game Title</label>
-                    <input type="text" id="game-title-input" value="PLINKO BURN">
-                </div>
-                <div class="config-item">
-                    <label for="peg-color">Peg Color</label>
-                    <div class="color-picker" id="peg-color-picker">
-                        <div class="color-option" style="background-color: #FF6B35;" data-color="#FF6B35"></div>
-                        <div class="color-option" style="background-color: #FFC15E;" data-color="#FFC15E"></div>
-                        <div class="color-option" style="background-color: #FF8C5A;" data-color="#FF8C5A"></div>
-                        <div class="color-option" style="background-color: #FF5151;" data-color="#FF5151"></div>
-                        <div class="color-option" style="background-color: #FFD700;" data-color="#FFD700"></div>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label for="ball-color">Ball Color</label>
-                    <div class="color-picker" id="ball-color-picker">
-                        <div class="color-option" style="background-color: #FFEB3B;" data-color="#FFEB3B"></div>
-                        <div class="color-option" style="background-color: #FFD54F;" data-color="#FFD54F"></div>
-                        <div class="color-option" style="background-color: #FFCC80;" data-color="#FFCC80"></div>
-                        <div class="color-option" style="background-color: #FFF59D;" data-color="#FFF59D"></div>
-                        <div class="color-option" style="background-color: #FFF176;" data-color="#FFF176"></div>
-                    </div>
+        <canvas id="plinko-board"></canvas>
+        
+        <div class="game-footer">
+            <button id="reset-btn">Reset Game</button>
+            <button id="edit-config">Edit Mode</button>
+            
+            <div class="sound-controls">
+                <div class="toggle-container">
+                    <span class="toggle-label">Sound FX</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sound-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
             </div>
-            <button id="apply-btn" class="action-btn" style="margin-top: 15px;">Apply Changes</button>
+        </div>
+    </div>
+        
+    <!-- Modified config panel to appear below the game -->
+    <div class="config-panel" id="config-panel">
+        <div class="editor-help">Tip: In Edit Mode, click directly on pegs or bin separators to edit their properties!</div>
+        
+        <div class="config-item">
+            <label for="game-title-input">Game Title:</label>
+            <input type="text" id="game-title-input" value="PLINKO BURN">
+        </div>
+        
+        <div class="config-item">
+            <label for="score-prefix-input">Score Prefix:</label>
+            <input type="text" id="score-prefix-input" value="$SHIRO Burned:">
+        </div>
+        
+        <div class="config-item">
+            <label for="max-balls-input">Total Balls Allowed:</label>
+            <input type="number" id="max-balls-input" value="50" min="1" max="1000">
+        </div>
+        
+        <div class="config-item">
+            <label for="num-rows">Number of Rows (8-16):</label>
+            <div class="slider-container">
+                <input type="range" id="num-rows" min="8" max="16" value="16">
+                <span id="num-rows-value">16</span>
+            </div>
+        </div>
+        
+        <div class="config-item">
+            <label for="ball-size">Ball Size:</label>
+            <div class="slider-container">
+                <input type="range" id="ball-size" min="5" max="15" value="10">
+                <span id="ball-size-value">10</span>
+            </div>
+        </div>
+        
+        <div class="config-item">
+            <label for="peg-size">Peg Size:</label>
+            <div class="slider-container">
+                <input type="range" id="peg-size" min="3" max="10" value="6">
+                <span id="peg-size-value">6</span>
+            </div>
+        </div>
+
+        <div class="config-item">
+            <label for="peg-bounciness">Peg Bounciness:</label>
+            <div class="slider-container">
+                <input type="range" id="peg-bounciness" min="0.5" max="1.5" step="0.1" value="1.0">
+                <span id="peg-bounciness-value">1.0</span>
+            </div>
+        </div>
+        
+        <div class="config-item">
+            <label for="ball-color">Ball Color:</label>
+            <div class="color-picker" id="ball-color-picker">
+                <div class="color-option" style="background-color: #FFC107;" data-color="#FFC107"></div>
+                <div class="color-option" style="background-color: #FFEB3B;" data-color="#FFEB3B"></div>
+                <div class="color-option" style="background-color: #FFD54F;" data-color="#FFD54F"></div>
+                <div class="color-option" style="background-color: #FFCC80;" data-color="#FFCC80"></div>
+                <div class="color-option" style="background-color: #FFF59D;" data-color="#FFF59D"></div>
+            </div>
+        </div>
+        
+        <div class="config-item">
+            <label for="peg-color">Default Peg Color:</label>
+            <div class="color-picker" id="peg-color-picker">
+                <div class="color-option" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                <div class="color-option" style="background-color: #FF6B35;" data-color="#FF6B35"></div>
+                <div class="color-option" style="background-color: #FFC15E;" data-color="#FFC15E"></div>
+                <div class="color-option" style="background-color: #FF8C5A;" data-color="#FF8C5A"></div>
+                <div class="color-option" style="background-color: #FF5151;" data-color="#FF5151"></div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: center;">
+            <button id="save-config">Save Configuration</button>
+            <button id="cancel-config" style="background-color: #F44336; box-shadow: 0px 3px 0px #B71C1C, 0px 4px 6px rgba(0, 0, 0, 0.3);">Cancel</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <div class="hole-editor" id="hole-editor">
+        <h3>Edit Bin Value</h3>
+        <input type="text" id="hole-value-input" placeholder="Value (e.g. 100, 1K, 1M, 1B)">
+        <div class="hole-editor-buttons">
+            <button id="save-hole-value">Save</button>
+            <button id="cancel-hole-value" style="background-color: #F44336; box-shadow: 0px 3px 0px #B71C1C, 0px 4px 6px rgba(0, 0, 0, 0.3);">Cancel</button>
+        </div>
+    </div>
+
+    <div class="peg-editor" id="peg-editor">
+        <h3>Edit Peg Properties</h3>
+        <div class="peg-editor-content">
+            <label for="custom-peg-color-picker">Peg Color:</label>
+            <div class="color-picker" id="custom-peg-color-picker">
+                <div class="color-option" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                <div class="color-option" style="background-color: #FF6B35;" data-color="#FF6B35"></div>
+                <div class="color-option" style="background-color: #FFC15E;" data-color="#FFC15E"></div>
+                <div class="color-option" style="background-color: #FF8C5A;" data-color="#FF8C5A"></div>
+                <div class="color-option" style="background-color: #FF5151;" data-color="#FF5151"></div>
+                <div class="color-option" style="background-color: #FFD700;" data-color="#FFD700"></div>
+                <div class="color-option" style="background-color: #4CAF50;" data-color="#4CAF50"></div>
+                <div class="color-option" style="background-color: #2196F3;" data-color="#2196F3"></div>
+                <div class="color-option" style="background-color: #9C27B0;" data-color="#9C27B0"></div>
+            </div>
+            
+            <label for="peg-bounce-custom">Bounciness:</label>
+            <div class="slider-container">
+                <input type="range" id="peg-bounce-custom" min="0.1" max="2.0" step="0.1" value="1.0">
+                <span id="peg-bounce-custom-value">1.0</span>
+            </div>
+        </div>
+        <div class="peg-editor-buttons">
+            <button id="save-peg-properties">Save</button>
+            <button id="cancel-peg-properties" style="background-color: #F44336; box-shadow: 0px 3px 0px #B71C1C, 0px 4px 6px rgba(0, 0, 0, 0.3);">Cancel</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Add Final Score Overlay -->
+    <div class="final-score-overlay" id="final-score-overlay">
+        <div class="final-score-container">
+            <div class="final-score-title">Game Over!</div>
+            <div class="final-score-prefix" id="final-score-prefix">$SHIRO Burned:</div>
+            <div class="final-score-value" id="final-score-value">0</div>
+            <div class="final-score-buttons">
+                <button class="final-score-btn" id="play-again-btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Game Configuration - keeping original dimensions
+        // Game Configuration
         const config = {
-            rows: 18,
-            columns: 12,
-            buckets: 15,
-            pegSize: 6,
-            ballSize: 10,
-            ballDensity: 0.3,
-            restitution: 0.5,
-            friction: 0.1,
-            gravity: 1.3,
-            startingBalls: 10,
+            rows: 16,
+            holeValues: [],
+            currentMultiplier: 1,
+            ballColor: '#FFC107',
             pegColor: '#FF6B35',
-            ballColor: '#FFEB3B',
-            bucketValues: [],
-            scoreLabel: '$SHIRO Burned',
-            gameTitle: 'PLINKO BURN',
-            dropSpeed: 100, // ms between ball drops for multi-drop
+            backgroundColor: '#241914',
+            gameTitle: "PLINKO BURN",
+            scorePrefix: "$SHIRO Burned:",
+            score: 0,
+            ballSize: 10,
+            pegSize: 6,
+            pegBounciness: 1.0,
+            maxBalls: 50,
+            ballsRemaining: 50,
             soundEnabled: true,
-            particleIntensity: 1.0 // Multiplier for particle amount
+            editMode: false,
+            customPegs: {},  // Store custom peg properties
+            physics: {
+                gravity: 0.18,  // Slightly increased gravity
+                bounce: 0.75,   // Slightly increased bounciness
+                friction: 0.98  // Slightly decreased friction
+            }
         };
 
-        // Game State
-        let score = 0;
-        let ballsLeft = config.startingBalls;
-        let gameRunning = true;
-        let editMode = false;
-        let engine, render, world, canvas, particlesCanvas, particlesCtx;
-        let pegs = [], walls = [], balls = [], bucketBodies = [];
-        let dropInterval = null;
-        let activePopup = null;
-        let particles = [];
-        let baseEmbers = [];
-        let musicInterval = null;
-        let musicOscillators = [];
-        let isResetting = false; // Flag to prevent multiple resets
-        let gameOverTimers = []; // Store game over animation timers
-        
-        // Audio Context and Sounds
-        let audioContext;
-        
-        // DOM Elements
-        const canvasContainer = document.getElementById('canvas-container');
-        const scoreDisplay = document.getElementById('score-display');
-        const scoreLabel = document.getElementById('score-label');
-        const ballsLeftDisplay = document.getElementById('balls-left-display');
-        const editModeBtn = document.getElementById('edit-mode-btn');
+        // Initialize default hole values - higher at edges, lower in middle
+        function initHoleValues() {
+            config.holeValues = [];
+            
+            for (let i = 0; i < config.rows; i++) {
+                let value;
+                
+                // Determine value based on position (higher at edges, lower in middle)
+                if (i === 0 || i === config.rows - 1) {
+                    value = '50B'; // Highest value at the edges
+                } else {
+                    // Calculate distance from center (normalized 0-1)
+                    const center = (config.rows - 1) / 2;
+                    const distFromCenter = Math.abs(i - center) / center;
+                    
+                    // Values decrease toward the center
+                    if (distFromCenter > 0.8) {
+                        value = '20B';
+                    } else if (distFromCenter > 0.6) {
+                        value = '10B';
+                    } else if (distFromCenter > 0.4) {
+                        value = '5B';
+                    } else if (distFromCenter > 0.2) {
+                        value = '1B';
+                    } else {
+                        value = '500M';
+                    }
+                }
+                
+                config.holeValues.push(value);
+            }
+        }
+
+        // Game Elements
+        const canvas = document.getElementById('plinko-board');
+        const ctx = canvas.getContext('2d');
+        const editConfigBtn = document.getElementById('edit-config');
         const configPanel = document.getElementById('config-panel');
-        const applyBtn = document.getElementById('apply-btn');
+        const saveConfigBtn = document.getElementById('save-config');
+        const cancelConfigBtn = document.getElementById('cancel-config');
         const resetBtn = document.getElementById('reset-btn');
-        const bucketsContainer = document.getElementById('buckets-container');
-        const dropBtn = document.getElementById('drop-btn');
-        const drop5xBtn = document.getElementById('drop-5x-btn');
-        const drop10xBtn = document.getElementById('drop-10x-btn');
-        const drop50xBtn = document.getElementById('drop-50x-btn');
-        const drop100xBtn = document.getElementById('drop-100x-btn');
-        const gameTitle = document.getElementById('game-title');
-        const gameOverlay = document.getElementById('game-overlay');
-        
-        // Stop any animations and cleanup for a fresh start
-        function stopAllAnimations() {
-            // Clear all particles
-            particles = [];
-            baseEmbers = [];
-            
-            // Clear the canvas
-            if (particlesCtx) {
-                particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
-            }
-            
-            // Clear any game over timers
-            if (gameOverTimers && gameOverTimers.length) {
-                gameOverTimers.forEach(id => window.clearTimeout(id));
-                gameOverTimers = [];
-            }
-            
-            // Stop continuous dropping
-            stopContinuousDrop();
-        }
-        
-        // Format large numbers with support for shorthand
-        function formatNumber(num) {
-            if (num >= 1e12) {
-                return (num / 1e12).toFixed(1) + 'T';
-            } else if (num >= 1e9) {
-                return (num / 1e9).toFixed(1) + 'B';
-            } else if (num >= 1e6) {
-                return (num / 1e6).toFixed(1) + 'M';
-            } else if (num >= 1e3) {
-                return (num / 1e3).toFixed(1) + 'K';
-            } else {
-                return num.toString();
-            }
-        }
+        const numRowsInput = document.getElementById('num-rows');
+        const numRowsValue = document.getElementById('num-rows-value');
+        const ballSizeInput = document.getElementById('ball-size');
+        const ballSizeValue = document.getElementById('ball-size-value');
+        const pegSizeInput = document.getElementById('peg-size');
+        const pegSizeValue = document.getElementById('peg-size-value');
+        const pegBouncinessInput = document.getElementById('peg-bounciness');
+        const pegBouncinessValue = document.getElementById('peg-bounciness-value');
+        const maxBallsInput = document.getElementById('max-balls-input');
+        const multiplierBtns = document.querySelectorAll('.multiplier-btn');
+        const gameTitleElement = document.getElementById('game-title');
+        const gameTitleInput = document.getElementById('game-title-input');
+        const scorePrefixElement = document.getElementById('score-prefix');
+        const scorePrefixInput = document.getElementById('score-prefix-input');
+        const scoreValueElement = document.getElementById('score-value');
+        const ballCountElement = document.getElementById('ball-count');
+        const maxBallsElement = document.getElementById('max-balls');
+        const holeEditor = document.getElementById('hole-editor');
+        const holeValueInput = document.getElementById('hole-value-input');
+        const saveHoleValueBtn = document.getElementById('save-hole-value');
+        const cancelHoleValueBtn = document.getElementById('cancel-hole-value');
+        const pegEditor = document.getElementById('peg-editor');
+        const pegBounceCustomInput = document.getElementById('peg-bounce-custom');
+        const pegBounceCustomValue = document.getElementById('peg-bounce-custom-value');
+        const savePegPropertiesBtn = document.getElementById('save-peg-properties');
+        const cancelPegPropertiesBtn = document.getElementById('cancel-peg-properties');
+        const overlay = document.getElementById('overlay');
+        const soundToggle = document.getElementById('sound-toggle');
+        const finalScoreOverlay = document.getElementById('final-score-overlay');
+        const finalScorePrefix = document.getElementById('final-score-prefix');
+        const finalScoreValue = document.getElementById('final-score-value');
+        const playAgainBtn = document.getElementById('play-again-btn');
 
-        // Parse shorthand numbers like "1T" to their numeric value
-        function parseShorthandNumber(str) {
-            str = str.trim().toUpperCase();
-            
-            // Regular number
-            if (!isNaN(str)) {
-                return parseFloat(str);
-            }
-            
-            // Shorthand notation
-            const value = parseFloat(str);
-            if (isNaN(value)) return 0;
-            
-            const unit = str.replace(/[0-9.]/g, '').trim();
-            
-            switch (unit) {
-                case 'K': return value * 1e3;
-                case 'M': return value * 1e6;
-                case 'B': return value * 1e9;
-                case 'T': return value * 1e12;
-                default: return value;
-            }
-        }
+        // Game State
+        let balls = [];
+        let pegs = [];
+        let bins = [];
+        let animationId;
+        let scale = 1;
+        let currentEditingBinIndex = -1;
+        let currentEditingPeg = null;
+        let customPegColor = config.pegColor;
+        let audioContext;
+        let dropInterval = null;
 
+        // Fixed base values for game dimensions - this is the reference size
+        const BASE_WIDTH = 800;
+        // Adjusted to create more horizontal space for pegs
+        const BASE_HEIGHT_PER_ROW = 42; // Reduced from 50 to ensure all pegs are visible
+
+        // Initialize the game
         function initGame() {
             // Initialize audio context
             initAudio();
             
-            // Use fixed dimensions for consistency
-            const fixedWidth = 800;
-            const fixedHeight = 600;
+            // Set canvas dimensions and calculate scale
+            resizeCanvas();
             
-            // Set up Matter.js
-            engine = Matter.Engine.create({
-                enableSleeping: true
-            });
-            world = engine.world;
-            engine.gravity.y = config.gravity;
-            
-            canvas = document.getElementById('plinko-canvas');
-            canvas.width = fixedWidth;
-            canvas.height = fixedHeight;
-            
-            // Initialize particles canvas with fixed dimensions
-            particlesCanvas = document.getElementById('particles-canvas');
-            particlesCanvas.width = fixedWidth;
-            particlesCanvas.height = fixedHeight;
-            particlesCtx = particlesCanvas.getContext('2d');
-            
-            render = Matter.Render.create({
-                canvas: canvas,
-                engine: engine,
-                options: {
-                    width: fixedWidth,
-                    height: fixedHeight,
-                    wireframes: false,
-                    background: 'transparent',
-                    showSleeping: false,
-                    showAngleIndicator: false
-                }
-            });
-            
-            Matter.Render.run(render);
-            
-            // Set initial values
-            scoreLabel.textContent = config.scoreLabel;
-            gameTitle.textContent = config.gameTitle;
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Create physics world
-            createBoundaries();
-            createPegs();
-            createBuckets();
-            
-            // Start the engine
-            const runner = Matter.Runner.create({
-                isFixed: true, 
-                delta: 16  // target 60fps
-            });
-            Matter.Runner.run(runner, engine);
-            
-            // Event listeners
-            Matter.Events.on(engine, 'collisionStart', handleCollision);
-            // Only add resize listener once
-            if (!window.resizeListenerAdded) {
-                window.addEventListener('resize', handleResize);
-                window.resizeListenerAdded = true;
+            // Initialize hole values if empty
+            if (config.holeValues.length === 0) {
+                initHoleValues();
             }
             
-            // Input events
-            setupInputHandlers();
+            // Create pegs and bins
+            createPegsAndBins();
             
-            // Generate bucket values
-            generateBucketValues();
-            updateBucketDisplay();
+            // Update UI with current configuration
+            updateUI();
             
-            // Initialize base embers
-            initBaseEmbers();
-            
-            // Start animation frame loop for particles
-            requestAnimationFrame(updateParticles);
+            // Start the game loop
+            gameLoop();
         }
-        
+
+        // Initialize audio context
         function initAudio() {
             try {
-                // Only create AudioContext on user interaction to avoid autoplay issues
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
@@ -1024,540 +942,511 @@
                 console.warn('AudioContext not supported');
             }
         }
-        
-        function createBoundaries() {
-            const wallOptions = { 
-                isStatic: true,
-                render: { 
-                    fillStyle: '#3B2723',
-                    strokeStyle: '#4A2F2A',
-                    lineWidth: 1
-                }
-            };
+
+        // Update UI elements with current configuration
+        function updateUI() {
+            gameTitleElement.textContent = config.gameTitle;
+            scorePrefixElement.textContent = config.scorePrefix;
+            scoreValueElement.textContent = formatLargeNumber(config.score);
+            ballCountElement.textContent = config.ballsRemaining;
+            maxBallsElement.textContent = config.maxBalls;
             
-            // Get current canvas dimensions to ensure proper alignment
-            const currentWidth = canvas.width;
-            
-            // Clear any existing walls
-            walls = [];
-            
-            // Left wall (positioned slightly off-screen)
-            walls.push(Matter.Bodies.rectangle(
-                -10, canvas.height / 2, 
-                20, canvas.height,
-                wallOptions
-            ));
-            
-            // Right wall (ensuring proper alignment using current width)
-            walls.push(Matter.Bodies.rectangle(
-                currentWidth + 10, canvas.height / 2, 
-                20, canvas.height,
-                wallOptions
-            ));
-            
-            // Add walls to world
-            Matter.Composite.add(world, walls);
+            // Update button states based on remaining balls
+            updateButtonStates();
         }
-        
-        function createPegs() {
-            const pegOptions = {
-                isStatic: true,
-                render: {
-                    fillStyle: config.pegColor,
-                    strokeStyle: '#FFF',
-                    lineWidth: 1
-                },
-                restitution: config.restitution,
-                friction: config.friction,
-                chamfer: { radius: 2 }
-            };
-            
-            // Clear existing pegs
-            pegs = [];
-            
-            // Calculate spacing based on current canvas dimensions
-            const spacing = canvas.width / (config.columns + 1);
-            const verticalSpacing = (canvas.height - 180) / (config.rows + 1); // Reduced bottom margin
-            const startY = 80; // Start lower to leave room at top
-            
-            for (let row = 0; row < config.rows; row++) {
-                const offsetX = row % 2 === 0 ? 0 : spacing / 2;
-                const numPegsInRow = row % 2 === 0 ? config.columns : config.columns - 1;
+
+        // Update button states based on remaining balls
+        function updateButtonStates() {
+            multiplierBtns.forEach(btn => {
+                const multiplier = parseInt(btn.dataset.multiplier);
                 
-                for (let col = 0; col < numPegsInRow; col++) {
-                    const pegX = offsetX + spacing * (col + 1);
-                    const pegY = startY + verticalSpacing * (row + 1);
-                    
-                    // Only create pegs that are within the canvas boundaries
-                    if (pegX > 0 && pegX < canvas.width && pegY > 0 && pegY < canvas.height - 100) {
-                        const peg = Matter.Bodies.circle(
-                            pegX,
-                            pegY,
-                            config.pegSize,
-                            pegOptions
-                        );
-                        
-                        // Give peg a reference to its original color
-                        peg.originalColor = config.pegColor;
-                        
-                        pegs.push(peg);
-                    }
-                }
-            }
-            
-            // Add pegs to world
-            Matter.Composite.add(world, pegs);
-        }
-        
-        function createBuckets() {
-            const bucketWidth = canvas.width / config.buckets;
-            const bucketHeight = 100;
-            const bucketY = canvas.height - bucketHeight / 2;
-            
-            // Clear existing buckets
-            bucketsContainer.innerHTML = '';
-            bucketBodies = [];
-            
-            // Create bucket visuals and physics
-            for (let i = 0; i < config.buckets; i++) {
-                // Create bucket visual (now a hole)
-                const bucket = document.createElement('div');
-                bucket.className = 'bucket';
-                bucket.dataset.index = i;
-                
-                // Create bucket hole visual
-                const bucketHole = document.createElement('div');
-                bucketHole.className = 'bucket-hole';
-                
-                // Create label for value
-                const bucketLabel = document.createElement('div');
-                bucketLabel.className = 'bucket-label';
-                bucketLabel.textContent = formatNumber(config.bucketValues[i] || 0);
-                
-                bucket.appendChild(bucketHole);
-                bucket.appendChild(bucketLabel);
-                bucketsContainer.appendChild(bucket);
-                
-                // Create bucket walls (invisible for visual style)
-                const leftWall = Matter.Bodies.rectangle(
-                    i * bucketWidth, 
-                    bucketY - 10,
-                    5, 
-                    bucketHeight - 20,
-                    { 
-                        isStatic: true,
-                        render: { 
-                            visible: false
-                        },
-                        chamfer: { radius: 2 }
-                    }
-                );
-                
-                // Only add right wall for the last bucket
-                if (i === config.buckets - 1) {
-                    const rightWall = Matter.Bodies.rectangle(
-                        (i + 1) * bucketWidth, 
-                        bucketY - 10, 
-                        5, 
-                        bucketHeight - 20,
-                        { 
-                            isStatic: true,
-                            render: { 
-                                visible: false
-                            },
-                            chamfer: { radius: 2 }
-                        }
-                    );
-                    bucketBodies.push(rightWall);
+                // Instead of disabling buttons, mark them with a class for styling
+                if (multiplier > config.ballsRemaining) {
+                    btn.classList.add('low-balls');
+                } else {
+                    btn.classList.remove('low-balls');
                 }
                 
-                // Create bucket bottom sensor for scoring
-                const bucketSensor = Matter.Bodies.rectangle(
-                    i * bucketWidth + bucketWidth / 2,
-                    canvas.height - 5,
-                    bucketWidth - 5,
-                    10,
-                    { 
-                        isStatic: true,
-                        isSensor: true,
-                        render: { 
-                            visible: false
-                        },
-                        bucketIndex: i
-                    }
-                );
-                
-                bucketBodies.push(leftWall, bucketSensor);
-            }
-            
-            // Add buckets to world
-            Matter.Composite.add(world, bucketBodies);
-        }
-        
-        function dropBall() {
-            if (ballsLeft <= 0 || !gameRunning) return;
-            
-            // Initialize audio context on first interaction
-            if (!audioContext) {
-                initAudio();
-            }
-            
-            // Random position along the top
-            const x = Math.random() * (canvas.width - 100) + 50;
-            const y = 40;
-            
-            const ball = Matter.Bodies.circle(x, y, config.ballSize, {
-                restitution: config.restitution,
-                friction: config.friction,
-                density: config.ballDensity,
-                frictionAir: 0.02,
-                render: {
-                    fillStyle: config.ballColor,
-                    strokeStyle: '#FFF',
-                    lineWidth: 1
-                }
+                // No longer disabling buttons
+                btn.disabled = false;
             });
+        }
+
+        // Resize canvas while maintaining aspect ratio and scaling for row count
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const containerWidth = container.clientWidth;
             
-            Matter.Composite.add(world, ball);
+            // Calculate dynamic height based on number of rows
+            // Add more vertical space to ensure all pegs fit
+            const baseHeight = BASE_HEIGHT_PER_ROW * (config.rows + 2);
+            
+            // Calculate scale relative to base width
+            scale = containerWidth / BASE_WIDTH;
+            
+            // Set canvas dimensions
+            canvas.width = containerWidth;
+            canvas.height = baseHeight * scale;
+        }
+
+        // Create pegs in a pyramid pattern and bins at the bottom
+        function createPegsAndBins() {
+            pegs = [];
+            bins = [];
+            
+            const pegSpacing = BASE_HEIGHT_PER_ROW * scale;
+            const pegRadius = config.pegSize * scale;
+            
+            const startX = canvas.width / 2;
+            const startY = pegSpacing * 1.5;
+            
+            // Create pegs
+            for (let row = 0; row < config.rows; row++) {
+                const numPegs = row + 3; // Start with 3 pegs in the first row
+                const rowWidth = (numPegs - 1) * pegSpacing;
+                const offsetX = startX - rowWidth / 2;
+                
+                for (let col = 0; col < numPegs; col++) {
+                    const pegId = `peg-${row}-${col}`;
+                    const customPeg = config.customPegs[pegId];
+                    
+                    pegs.push({
+                        x: offsetX + col * pegSpacing,
+                        y: startY + row * pegSpacing,
+                        radius: pegRadius,
+                        row: row,
+                        col: col,
+                        id: pegId,
+                        color: customPeg ? customPeg.color : config.pegColor,
+                        bounciness: customPeg ? customPeg.bounciness : config.pegBounciness
+                    });
+                }
+            }
+            
+            // Create bins as evenly spaced dividers
+            const binY = startY + config.rows * pegSpacing + pegSpacing / 2;
+            const numBins = config.rows;
+            const binSpacing = canvas.width / numBins;
+            
+            for (let i = 0; i <= numBins; i++) {
+                bins.push({
+                    x: i * binSpacing,
+                    y: binY,
+                    index: Math.min(i, numBins - 1)
+                });
+            }
+        }
+
+        // Drop a new ball if there are balls remaining
+        function dropBall() {
+            if (config.ballsRemaining <= 0) return false;
+            
+            // Resume AudioContext if suspended
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            const ballRadius = config.ballSize * scale;
+            
+            // Add more random initial conditions to prevent sticking
+            const randomXOffset = (Math.random() * 6 - 3) * scale;
+            const randomYVelocity = Math.random() * scale + 0.2 * scale;
+            
+            const ball = {
+                x: canvas.width / 2 + randomXOffset,
+                y: BASE_HEIGHT_PER_ROW * scale, // Start position above first peg
+                radius: ballRadius,
+                velocityX: (Math.random() * 0.4 - 0.2) * scale, // Initial horizontal velocity
+                velocityY: randomYVelocity,
+                landed: false,
+                binIndex: -1,
+                lastPegHit: null, // Track last peg hit to prevent multiple collisions
+                stuckFrames: 0 // Counter to detect if ball is stuck
+            };
+            
             balls.push(ball);
+            config.ballsRemaining--;
             
-            // Decrease balls left
-            ballsLeft--;
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Play sound
+            // Play ball drop sound
             playBallDropSound();
             
-            // Check if game is over
-            if (ballsLeft === 0 && balls.length === 0) {
-                setTimeout(checkGameOver, 5000);
-            }
+            // Update UI
+            ballCountElement.textContent = config.ballsRemaining;
+            updateButtonStates();
+            
+            return true;
         }
-        
+
+        // Drop multiple balls if available
         function dropMultipleBalls(count) {
+            // Use as many balls as available, up to requested count
+            const ballsToUse = Math.min(count, config.ballsRemaining);
+            if (ballsToUse <= 0) return;
+            
             // Initialize audio context on first interaction
-            if (!audioContext) {
-                initAudio();
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
             }
             
-            const maxCount = Math.min(count, ballsLeft);
-            if (maxCount <= 0) return;
-            
-            let dropped = 0;
-            
-            const dropNext = () => {
-                if (dropped < maxCount && gameRunning) {
-                    dropBall();
-                    dropped++;
-                    setTimeout(dropNext, config.dropSpeed);
-                }
-            };
-            
-            dropNext();
+            for (let i = 0; i < ballsToUse; i++) {
+                setTimeout(() => {
+                    const ballDropped = dropBall();
+                    
+                    // Check if this was the last ball
+                    if (config.ballsRemaining === 0) {
+                        // Set a timeout to show the final score after the last ball settles
+                        setTimeout(showFinalScore, 2500);
+                    }
+                }, i * 100); // Delay each ball drop slightly
+            }
         }
         
-        function startContinuousDrop() {
-            // Initialize audio context on first interaction
-            if (!audioContext) {
-                initAudio();
+        // Show final score overlay when the game is over
+        function showFinalScore() {
+            // Make sure all balls have settled or been removed
+            if (balls.length > 0) {
+                // If there are still balls in play, wait a bit longer
+                setTimeout(showFinalScore, 1000);
+                return;
             }
             
-            if (dropInterval) return;
+            // Update final score display
+            finalScorePrefix.textContent = config.scorePrefix;
+            finalScoreValue.textContent = formatLargeNumber(config.score);
             
-            dropBall(); // Drop first ball immediately
-            
-            dropInterval = setInterval(() => {
-                if (ballsLeft > 0 && gameRunning) {
-                    dropBall();
+            // Show the overlay
+            finalScoreOverlay.classList.add('visible');
+        }
+
+        // Update ball positions and check for collisions
+        function updateBalls() {
+            for (let i = balls.length - 1; i >= 0; i--) {
+                const ball = balls[i];
+                
+                if (ball.landed) {
+                    if (ball.y > canvas.height + ball.radius * 4) {
+                        // Remove ball once it's off-screen
+                        balls.splice(i, 1);
+                    } else {
+                        // Continue falling after landing
+                        ball.y += 5 * scale;
+                    }
+                    continue;
+                }
+                
+                // Track previous position to detect sticking
+                const prevX = ball.x;
+                const prevY = ball.y;
+                
+                // Apply gravity (scaled)
+                ball.velocityY += config.physics.gravity * scale;
+                
+                // Apply friction
+                ball.velocityX *= config.physics.friction;
+                ball.velocityY *= config.physics.friction;
+                
+                // Update position
+                ball.x += ball.velocityX;
+                ball.y += ball.velocityY;
+                
+                // Improved stuck detection with lower threshold and quicker response
+                if (Math.abs(ball.x - prevX) < 0.15 * scale && 
+                    Math.abs(ball.y - prevY) < 0.15 * scale &&
+                    ball.y < bins[0].y - ball.radius * 2) {
+                    
+                    ball.stuckFrames++;
+                    
+                    // Detect stuck balls more quickly and apply stronger impulse
+                    if (ball.stuckFrames > 15) { // 15 frames = ~0.25 seconds (faster detection)
+                        // Strong impulse in a random direction with bias downward
+                        ball.velocityX += (Math.random() * 2.5 - 1.25) * scale;
+                        ball.velocityY += Math.random() * scale + 1.0 * scale; // Much stronger downward push
+                        
+                        // For severe cases, teleport the ball slightly
+                        if (ball.stuckFrames > 30) {
+                            // Small teleport to escape the stuck position
+                            ball.x += (Math.random() * 2 - 1) * ball.radius * 0.5;
+                            ball.y += ball.radius * 0.5; // Small nudge downward
+                        }
+                        
+                        ball.stuckFrames = 0;
+                    }
                 } else {
-                    stopContinuousDrop();
+                    ball.stuckFrames = 0;
                 }
-            }, 200); // Drop a ball every 200ms
+                
+                // Apply a minimum velocity to keep balls moving
+                const minVelocity = 0.3 * scale;
+                const currentVelocity = Math.sqrt(ball.velocityX * ball.velocityX + ball.velocityY * ball.velocityY);
+                if (currentVelocity < minVelocity && !ball.landed && ball.y < bins[0].y - ball.radius * 2) {
+                    // Calculate multiplier needed to reach min velocity
+                    const multiplier = minVelocity / (currentVelocity || 0.01); // Avoid division by zero
+                    ball.velocityX *= multiplier;
+                    ball.velocityY *= multiplier;
+                    
+                    // Ensure some downward momentum
+                    if (ball.velocityY < 0.1 * scale) {
+                        ball.velocityY += 0.1 * scale;
+                    }
+                }
+                
+                // Check for peg collisions with improved interaction
+                let collided = false;
+                
+                for (const peg of pegs) {
+                    // Skip if this is the last peg we hit (prevents multiple collisions with same peg)
+                    if (peg === ball.lastPegHit) continue;
+                    
+                    const dx = ball.x - peg.x;
+                    const dy = ball.y - peg.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const minDistance = ball.radius + peg.radius;
+                    
+                    if (distance < minDistance) {
+                        // Collision detected
+                        collided = true;
+                        ball.lastPegHit = peg; // Remember this peg
+                        
+                        // Calculate the angle of collision
+                        const angle = Math.atan2(dy, dx);
+                        
+                        // Improved top hit detection with broader range
+                        const isTopHit = angle > -Math.PI/3 && angle < Math.PI/3;
+                        
+                        // Adjust overlap and push more significantly if hitting top
+                        const overlap = minDistance - distance;
+                        const pushFactor = isTopHit ? 1.5 : 1.1;
+                        
+                        // Move the ball out of the peg with more push
+                        ball.x += Math.cos(angle) * overlap * pushFactor;
+                        ball.y += Math.sin(angle) * overlap * pushFactor;
+                        
+                        // More variation for top hits to prevent sticking
+                        const angleVariation = isTopHit ? 0.7 : 0.3;
+                        // Slightly bias the deflection angle to avoid getting stuck on top
+                        let bounceAngle;
+                        if (isTopHit) {
+                            // Calculate a bounce angle biased to either left or right
+                            const bias = (Math.random() > 0.5) ? 0.2 : -0.2;
+                            bounceAngle = angle + bias + (Math.random() * angleVariation * 2 - angleVariation);
+                        } else {
+                            bounceAngle = angle + (Math.random() * angleVariation * 2 - angleVariation);
+                        }
+                        
+                        // Calculate speed and apply increased bounciness
+                        const speed = Math.sqrt(ball.velocityX * ball.velocityX + ball.velocityY * ball.velocityY);
+                        const pegBounce = peg.bounciness; // Use per-peg bounciness
+                        // More random bounce factor for liveliness
+                        const randomBounceFactor = config.physics.bounce + (Math.random() * 0.3 - 0.1);
+                        const bounceFactor = randomBounceFactor * pegBounce;
+                        
+                        // Apply the bounce effect
+                        ball.velocityX = Math.cos(bounceAngle) * speed * bounceFactor;
+                        ball.velocityY = Math.sin(bounceAngle) * speed * bounceFactor;
+                        
+                        // Add more horizontal motion to prevent sticking
+                        ball.velocityX += (Math.random() * 0.8 - 0.4) * scale;
+                        
+                        // If hitting top, add substantially more downward force and horizontal motion
+                        if (isTopHit) {
+                            ball.velocityY += 0.8 * scale; // More downward force
+                            // Add significant horizontal movement in random direction
+                            const horizontalPush = (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.3) * scale;
+                            ball.velocityX += horizontalPush;
+                        }
+                        
+                        // Visual feedback - flash the peg
+                        peg.isFlashing = true;
+                        
+                        // Play sound for peg hit with velocity-based pitch
+                        const hitVelocity = Math.sqrt(
+                            Math.pow(ball.velocityX, 2) + 
+                            Math.pow(ball.velocityY, 2)
+                        );
+                        playPegHitSound(200 + hitVelocity * 100);
+                        
+                        // Only process one collision per frame to prevent energy gain
+                        break;
+                    }
+                }
+                
+                // Clear lastPegHit if no collision this frame
+                if (!collided) {
+                    ball.lastPegHit = null;
+                }
+                
+                // Check for wall collisions
+                if (ball.x - ball.radius < 0) {
+                    ball.x = ball.radius;
+                    ball.velocityX = -ball.velocityX * config.physics.bounce;
+                } else if (ball.x + ball.radius > canvas.width) {
+                    ball.x = canvas.width - ball.radius;
+                    ball.velocityX = -ball.velocityX * config.physics.bounce;
+                }
+                
+                // Check if ball has reached the bottom (bin line)
+                if (ball.y > bins[0].y - ball.radius) {
+                    // Find which bin the ball landed in
+                    for (let b = 0; b < bins.length - 1; b++) {
+                        if (ball.x >= bins[b].x && ball.x < bins[b+1].x) {
+                            ball.binIndex = b;
+                            ball.landed = true;
+                            
+                            // Add to score
+                            addToScore(config.holeValues[b]);
+                            
+                            // Show winning animation
+                            const midX = (bins[b].x + bins[b+1].x) / 2;
+                            showWinningAnimation(config.holeValues[b], midX, bins[0].y);
+                            
+                            // Play bucket sound
+                            playBucketSound(b);
+                            
+                            break;
+                        }
+                    }
+                    
+                    // Handle edge case for rightmost position
+                    if (!ball.landed && ball.x >= bins[bins.length-1].x) {
+                        const lastIndex = config.holeValues.length - 1;
+                        ball.binIndex = lastIndex;
+                        ball.landed = true;
+                        
+                        // Add to score
+                        addToScore(config.holeValues[lastIndex]);
+                        
+                        // Show winning animation
+                        showWinningAnimation(config.holeValues[lastIndex], ball.x, bins[0].y);
+                        
+                        // Play bucket sound
+                        playBucketSound(lastIndex);
+                    }
+                }
+            }
         }
-        
-        function stopContinuousDrop() {
+
+        // Reset the game
+        function resetGame() {
+            // Clear any intervals
             if (dropInterval) {
                 clearInterval(dropInterval);
                 dropInterval = null;
             }
+            
+            // Hide final score overlay if visible
+            finalScoreOverlay.classList.remove('visible');
+            
+            // Reset game state
+            config.score = 0;
+            config.ballsRemaining = config.maxBalls;
+            balls = [];
+            
+            // Reset UI
+            scoreValueElement.textContent = '0';
+            ballCountElement.textContent = config.ballsRemaining;
+            
+            // Update button states
+            updateButtonStates();
+            
+            // Reset first multiplier button to active
+            multiplierBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.multiplier-btn[data-multiplier="1"]').classList.add('active');
         }
-        
-        function generateBucketValues() {
-            // If bucket values already exist with matching length, don't regenerate
-            if (config.bucketValues.length === config.buckets) {
-                return;
+
+        // Parse value notation (1K, 1M, 1B, etc.) to numeric value
+        function parseValueNotation(valueStr) {
+            const value = valueStr.toString().trim();
+            const numericPart = parseFloat(value.replace(/[^0-9.]/g, '')) || 0;
+            
+            if (value.includes('K')) {
+                return numericPart * 1000;
+            } else if (value.includes('M')) {
+                return numericPart * 1000000;
+            } else if (value.includes('B')) {
+                return numericPart * 1000000000;
+            } else if (value.includes('T')) {
+                return numericPart * 1000000000000;
+            } else if (value.includes('Q')) {
+                return numericPart * 1000000000000000;
             }
             
-            // Reset to empty array
-            config.bucketValues = [];
-            
-            // Set middle bucket to 50B
-            const middleIndex = Math.floor((config.buckets - 1) / 2);
-            const middleValue = 50 * 1e9; // 50B
-            
-            // Generate symmetrical values
-            for (let i = 0; i < config.buckets; i++) {
-                const distFromCenter = Math.abs(i - middleIndex);
-                
-                if (distFromCenter === 0) {
-                    // Center bucket
-                    config.bucketValues[i] = middleValue;
-                } else {
-                    // Calculate decreasing values outward (exponential decay)
-                    const ratio = Math.pow(0.7, distFromCenter);
-                    const value = Math.round(middleValue * ratio);
-                    config.bucketValues[i] = value;
-                }
-            }
+            return numericPart;
         }
-        
-        function updateBucketDisplay() {
-            const buckets = document.querySelectorAll('.bucket');
-            
-            buckets.forEach((bucket, index) => {
-                const label = bucket.querySelector('.bucket-label');
-                if (label) {
-                    label.textContent = formatNumber(config.bucketValues[index] || 0);
-                }
-                
-                // Add or remove edit-bucket class based on edit mode
-                if (editMode) {
-                    bucket.classList.add('edit-bucket');
-                } else {
-                    bucket.classList.remove('edit-bucket');
-                }
-            });
+
+        // Add value to score
+        function addToScore(valueStr) {
+            const scoreValue = parseValueNotation(valueStr);
+            config.score += scoreValue;
+            scoreValueElement.textContent = formatLargeNumber(config.score);
         }
-        
-        function showBucketEditPopup(bucket) {
-            // If another popup is open, close it
-            if (activePopup) {
-                activePopup.remove();
-                activePopup = null;
+
+        // Format large number to include K, M, B, T, Q
+        function formatLargeNumber(num) {
+            if (num >= 1000000000000000) {
+                return (num / 1000000000000000).toFixed(1) + 'Q';
+            } else if (num >= 1000000000000) {
+                return (num / 1000000000000).toFixed(1) + 'T';
+            } else if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
             }
+            return num.toString();
+        }
+
+        // Show winning animation
+        function showWinningAnimation(value, x, y) {
+            const gameContainer = document.querySelector('.game-container');
+            const rect = canvas.getBoundingClientRect();
             
-            const bucketIndex = parseInt(bucket.dataset.index);
-            const currentValue = config.bucketValues[bucketIndex];
+            // Convert canvas coordinates to DOM coordinates
+            const domX = rect.left + (x / canvas.width) * rect.width;
+            const domY = rect.top + (y / canvas.height) * rect.height;
             
-            const popup = document.createElement('div');
-            popup.className = 'bucket-edit-popup';
+            const winDisplay = document.createElement('div');
+            winDisplay.textContent = value;
+            winDisplay.className = 'win-display';
+            winDisplay.style.position = 'fixed';
+            winDisplay.style.top = domY + 'px';
+            winDisplay.style.left = domX + 'px';
+            winDisplay.style.transform = 'translate(-50%, -50%)';
+            winDisplay.style.fontSize = (1.5 * scale) + 'rem';
+            winDisplay.style.fontWeight = 'bold';
+            winDisplay.style.color = '#FFC107';
+            winDisplay.style.textShadow = '0 0 10px rgba(255, 193, 7, 0.8), 0 0 20px rgba(255, 193, 7, 0.5)';
+            winDisplay.style.zIndex = '100';
             
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = formatNumber(currentValue);
+            document.body.appendChild(winDisplay);
             
-            input.addEventListener('keydown', e => {
-                if (e.key === 'Enter') {
-                    saveBucketValue();
-                }
-            });
-            
-            const saveBtn = document.createElement('button');
-            saveBtn.textContent = 'Save';
-            saveBtn.addEventListener('click', saveBucketValue);
-            
-            popup.appendChild(input);
-            popup.appendChild(saveBtn);
-            bucket.appendChild(popup);
-            
-            // Set as active popup
-            activePopup = popup;
-            
-            // Focus input (with slight delay to allow tap events to complete)
+            // Animate and remove
             setTimeout(() => {
-                input.focus();
-                input.select();
-            }, 50);
-            
-            function saveBucketValue() {
-                const newValue = parseShorthandNumber(input.value);
-                config.bucketValues[bucketIndex] = newValue;
-                updateBucketDisplay();
-                popup.remove();
-                activePopup = null;
-            }
-            
-            // Close when clicking/tapping outside - with a small delay to avoid immediate closing
-            setTimeout(() => {
-                const closeHandler = e => {
-                    // Only close if the click/tap is outside the popup and not on the bucket
-                    if (!popup.contains(e.target) && !bucket.contains(e.target) || bucket === e.target) {
-                        popup.remove();
-                        activePopup = null;
-                        document.removeEventListener('click', closeHandler);
-                        document.removeEventListener('touchend', closeHandler);
-                    }
-                };
-                
-                document.addEventListener('click', closeHandler);
-                document.addEventListener('touchend', closeHandler);
-            }, 100);
-        }
-        
-        function handleCollision(event) {
-            const pairs = event.pairs;
-            
-            for (let i = 0; i < pairs.length; i++) {
-                const pair = pairs[i];
-                
-                // Check if a ball hit a peg
-                if (pegs.includes(pair.bodyA) || pegs.includes(pair.bodyB)) {
-                    const peg = pegs.includes(pair.bodyA) ? pair.bodyA : pair.bodyB;
-                    const ball = pegs.includes(pair.bodyA) ? pair.bodyB : pair.bodyA;
-                    
-                    // Skip if the peg is already flashing
-                    if (peg.isFlashing) continue;
-                    
-                    // Mark peg as flashing to prevent multiple triggers
-                    peg.isFlashing = true;
-                    
-                    // Visual feedback
-                    const originalFill = peg.originalColor;
-                    peg.render.fillStyle = '#FFFFFF';
-                    
-                    // Get collision velocity for sound pitch
-                    const velocity = Math.sqrt(
-                        Math.pow(ball.velocity.x, 2) + 
-                        Math.pow(ball.velocity.y, 2)
-                    );
-                    
-                    // Play sound based on velocity
-                    playPegHitSound(200 + velocity * 100);
-                    
-                    // Reset color after a short delay
-                    setTimeout(() => {
-                        peg.render.fillStyle = originalFill;
-                        peg.isFlashing = false;
-                    }, 100);
-                }
-                
-                // Check if a ball hit a bucket sensor
-                if ((pair.bodyA.isSensor || pair.bodyB.isSensor) && 
-                    (balls.includes(pair.bodyA) || balls.includes(pair.bodyB))) {
-                    
-                    const sensor = pair.bodyA.isSensor ? pair.bodyA : pair.bodyB;
-                    const ball = pair.bodyA.isSensor ? pair.bodyB : pair.bodyA;
-                    
-                    if (sensor.bucketIndex !== undefined && balls.includes(ball)) {
-                        scorePoints(sensor.bucketIndex, ball);
-                        
-                        // Remove ball from tracking array
-                        const ballIndex = balls.indexOf(ball);
-                        if (ballIndex !== -1) {
-                            balls.splice(ballIndex, 1);
-                        }
-                        
-                        // Remove ball from world after a delay
-                        setTimeout(() => {
-                            Matter.Composite.remove(world, ball);
-                            
-                            // Check if game is over
-                            if (ballsLeft === 0 && balls.length === 0) {
-                                setTimeout(checkGameOver, 2000);
-                            }
-                        }, 100);
-                    }
-                }
-            }
-        }
-        
-        function scorePoints(bucketIndex, ball) {
-            const points = config.bucketValues[bucketIndex];
-            score += points;
-            scoreDisplay.textContent = formatNumber(score);
-            
-            // Calculate middle bucket and adjacent buckets
-            const middleIndex = Math.floor((config.buckets - 1) / 2);
-            const isMiddle = bucketIndex === middleIndex;
-            const isAdjacent = Math.abs(bucketIndex - middleIndex) === 1;
-            
-            // Show visual feedback on bucket
-            const bucket = document.querySelector(`.bucket[data-index="${bucketIndex}"]`);
-            if (bucket) {
-                bucket.classList.add('glow');
+                winDisplay.style.opacity = '0';
+                winDisplay.style.transform = 'translate(-50%, -150%)';
                 setTimeout(() => {
-                    bucket.classList.remove('glow');
-                }, 500);
-                
-                // Add glow effect to bucket hole
-                const bucketHole = bucket.querySelector('.bucket-hole');
-                if (bucketHole) {
-                    // Apply appropriate glow class
-                    if (isMiddle) {
-                        bucketHole.classList.add('glow-center');
-                        setTimeout(() => bucketHole.classList.remove('glow-center'), 2000);
-                    } else if (isAdjacent) {
-                        bucketHole.classList.add('glow-adjacent');
-                        setTimeout(() => bucketHole.classList.remove('glow-adjacent'), 1750);
-                    } else {
-                        bucketHole.classList.add('glow-regular');
-                        setTimeout(() => bucketHole.classList.remove('glow-regular'), 1000);
-                    }
-                }
-            }
-            
-            // Create score popup
-            const popup = document.createElement('div');
-            popup.className = 'score-popup';
-            
-            // Add appropriate class based on position
-            if (isMiddle) {
-                popup.classList.add('center');
-            } else if (isAdjacent) {
-                popup.classList.add('adjacent');
-            } else {
-                popup.classList.add('regular');
-            }
-            
-            popup.textContent = `+${formatNumber(points)}`;
-            
-            // Position the popup directly above the bucket
-            // Using percentage-based positioning for better mobile compatibility
-            const bucketWidth = 100 / config.buckets;
-            const leftPosition = bucketWidth * (bucketIndex + 0.5);
-            
-            popup.style.position = 'absolute';
-            popup.style.zIndex = '50';
-            popup.style.left = `${leftPosition}%`;
-            popup.style.transform = 'translateX(-50%)';
-            popup.style.bottom = '80px';
-            
-            // Add popup to the container
-            canvasContainer.appendChild(popup);
-            
-            // Set duration based on position (already handled by CSS animations)
-            // But we need to remove the element after animation completes
-            const duration = isMiddle ? 2000 : isAdjacent ? 1750 : 1000;
-            
-            setTimeout(() => {
-                if (popup && popup.parentNode) {
-                    popup.remove();
-                }
-            }, duration);
-            
-            // Play sound
-            playBucketSound(bucketIndex);
-            
-            // Create ember explosion effect
-            createEmberExplosion(bucketIndex);
+                    winDisplay.remove();
+                }, 1000);
+            }, 1000);
         }
-        
+
+        // Sound effects
         function playBallDropSound() {
-            if (!audioContext || !config.soundEnabled) return;
+            if (!config.soundEnabled || !audioContext) return;
             const frequency = 400 + Math.random() * 100;
             playSound(frequency, 0.03, 'sine', 0.1);
         }
-        
+
         function playPegHitSound(frequency) {
-            if (!audioContext || !config.soundEnabled) return;
+            if (!config.soundEnabled || !audioContext) return;
             playSound(frequency, 0.05, 'triangle', 0.08);
         }
-        
+
         function playBucketSound(bucketIndex) {
-            if (!audioContext || !config.soundEnabled) return;
+            if (!config.soundEnabled || !audioContext) return;
             
             // Calculate how far from center the bucket is
-            const middleIndex = Math.floor((config.buckets - 1) / 2);
+            const middleIndex = Math.floor((config.rows - 1) / 2);
             const distFromCenter = Math.abs(bucketIndex - middleIndex);
             const isMiddle = distFromCenter === 0;
             const isAdjacent = distFromCenter === 1;
@@ -1582,9 +1471,9 @@
             // Play sizzle sound with varying intensity
             playSizzleSound(baseFreq, volume, intensity);
         }
-        
+
         function playSound(frequency, volume, type = 'sine', duration = 0.3) {
-            if (!audioContext || !config.soundEnabled) return;
+            if (!config.soundEnabled || !audioContext) return;
             
             try {
                 const oscillator = audioContext.createOscillator();
@@ -1608,9 +1497,9 @@
                 console.warn('Error playing sound', e);
             }
         }
-        
+
         function playSizzleSound(baseFreq, volume, intensity = 1) {
-            if (!audioContext || !config.soundEnabled) return;
+            if (!config.soundEnabled || !audioContext) return;
             
             try {
                 // Create noise
@@ -1691,7 +1580,7 @@
                 console.warn('Error playing sizzle sound', e);
             }
         }
-        
+
         // Creates a distortion curve for sound effects
         function makeDistortionCurve(amount) {
             const k = typeof amount === 'number' ? amount : 50;
@@ -1706,332 +1595,511 @@
             
             return curve;
         }
-        
-        function checkGameOver() {
-            if (ballsLeft === 0 && balls.length === 0) {
-                gameRunning = false;
-                
-                // Get score container
-                const scoreContainer = document.querySelector('.score');
-                
-                // Add game-over class to score for animation
-                scoreContainer.classList.add('game-over');
-                
-                // Show overlay
-                if (gameOverlay) {
-                    gameOverlay.style.display = 'flex';
+
+        // Open bin editor
+        function openBinEditor(binIndex) {
+            currentEditingBinIndex = binIndex;
+            holeValueInput.value = config.holeValues[binIndex];
+            
+            holeEditor.classList.add('open');
+            overlay.classList.add('open');
+            
+            holeValueInput.focus();
+        }
+
+        // Close bin editor
+        function closeBinEditor() {
+            holeEditor.classList.remove('open');
+            overlay.classList.remove('open');
+            currentEditingBinIndex = -1;
+        }
+
+        // Save bin value
+        function saveBinValue() {
+            if (currentEditingBinIndex >= 0) {
+                const newValue = holeValueInput.value;
+                config.holeValues[currentEditingBinIndex] = newValue;
+            }
+            closeBinEditor();
+        }
+
+        // Open peg editor
+        function openPegEditor(peg) {
+            currentEditingPeg = peg;
+            
+            // Set initial values in the editor
+            pegBounceCustomInput.value = peg.bounciness;
+            pegBounceCustomValue.textContent = peg.bounciness;
+            
+            // Select the current peg color in the picker
+            const colorOptions = document.querySelectorAll('#custom-peg-color-picker .color-option');
+            colorOptions.forEach(option => {
+                if (option.dataset.color === peg.color) {
+                    option.style.border = '2px solid white';
+                    customPegColor = peg.color;
+                } else {
+                    option.style.border = '2px solid rgba(255, 255, 255, 0.2)';
                 }
+            });
+            
+            // Show the editor
+            pegEditor.classList.add('open');
+            overlay.classList.add('open');
+        }
+
+        // Close peg editor
+        function closePegEditor() {
+            pegEditor.classList.remove('open');
+            overlay.classList.remove('open');
+            currentEditingPeg = null;
+        }
+
+        // Save peg properties
+        function savePegProperties() {
+            if (currentEditingPeg) {
+                currentEditingPeg.color = customPegColor;
+                currentEditingPeg.bounciness = parseFloat(pegBounceCustomInput.value);
                 
-                // Play a final sound
-                if (config.soundEnabled) {
-                    playSizzleSound(150, 0.2, 2);
+                // Store custom properties in config
+                config.customPegs[currentEditingPeg.id] = {
+                    color: customPegColor,
+                    bounciness: parseFloat(pegBounceCustomInput.value)
+                };
+            }
+            closePegEditor();
+        }
+
+        // Check if click is near a bin divider or in a bin
+        function checkBinClick(x, y) {
+            const clickThreshold = 15 * scale;
+            
+            // Check if click is near the bin line
+            if (Math.abs(y - bins[0].y) > clickThreshold) {
+                return -1;
+            }
+            
+            // Find the bin area that was clicked
+            for (let i = 0; i < bins.length - 1; i++) {
+                if (x >= bins[i].x && x < bins[i+1].x) {
+                    return i;
                 }
+            }
+            
+            return -1;
+        }
+
+        // Check if click is on a peg
+        function checkPegClick(x, y) {
+            const clickThreshold = 15 * scale;
+            
+            for (const peg of pegs) {
+                const distance = Math.sqrt(Math.pow(x - peg.x, 2) + Math.pow(y - peg.y, 2));
+                if (distance < peg.radius + clickThreshold) {
+                    return peg;
+                }
+            }
+            
+            return null;
+        }
+
+        // Draw the game
+        function drawGame() {
+            // Clear canvas
+            ctx.fillStyle = config.backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw pegs with glowing effect
+            for (const peg of pegs) {
+                // Draw glow
+                const gradient = ctx.createRadialGradient(
+                    peg.x, peg.y, 0,
+                    peg.x, peg.y, peg.radius * 2
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
                 
-                // Clear any existing game over timers
-                gameOverTimers.forEach(id => window.clearTimeout(id));
-                gameOverTimers = [];
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(peg.x, peg.y, peg.radius * 2, 0, Math.PI * 2);
+                ctx.fill();
                 
-                // Create falling embers for end game effect
-                for (let i = 0; i < 50; i++) {
-                    const timerId = setTimeout(() => {
-                        // Don't create more particles if we've reset the game
-                        if (!gameRunning && !isResetting) {
-                            const randomBucket = Math.floor(Math.random() * config.buckets);
-                            createEmberExplosion(randomBucket);
-                        }
-                    }, i * 200);
+                // Draw peg
+                // If peg is flashing, use white, otherwise use its color
+                ctx.fillStyle = peg.isFlashing ? '#FFFFFF' : peg.color;
+                ctx.beginPath();
+                ctx.arc(peg.x, peg.y, peg.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Reset flashing state
+                if (peg.isFlashing) {
+                    setTimeout(() => {
+                        peg.isFlashing = false;
+                    }, 100);
+                }
+            }
+            
+            // Draw bins with borders
+            ctx.strokeStyle = '#FF6B35';
+            ctx.lineWidth = 2 * scale;
+            
+            // Draw horizontal line at the bottom of the pegs
+            ctx.beginPath();
+            ctx.moveTo(0, bins[0].y);
+            ctx.lineTo(canvas.width, bins[0].y);
+            ctx.stroke();
+            
+            // Draw dividers and bin borders
+            for (let i = 0; i < bins.length; i++) {
+                const bin = bins[i];
+                
+                // Draw divider line
+                ctx.beginPath();
+                ctx.moveTo(bin.x, bin.y);
+                ctx.lineTo(bin.x, canvas.height);
+                ctx.stroke();
+                
+                // Draw bin border rectangles
+                if (i < bins.length - 1) {
+                    // Draw a slightly lighter rectangle for each bin area
+                    ctx.fillStyle = 'rgba(255, 107, 53, 0.1)'; // Transparent orange-red
+                    ctx.fillRect(bin.x, bin.y, bins[i+1].x - bin.x, canvas.height - bin.y);
                     
-                    gameOverTimers.push(timerId);
+                    // Draw border for bin area
+                    ctx.strokeStyle = 'rgba(255, 107, 53, 0.5)'; // Semi-transparent orange-red
+                    ctx.lineWidth = 1 * scale;
+                    ctx.strokeRect(bin.x, bin.y, bins[i+1].x - bin.x, canvas.height - bin.y);
+                    
+                    // Reset stroke style
+                    ctx.strokeStyle = '#FF6B35';
+                    ctx.lineWidth = 2 * scale;
+                }
+            }
+            
+            // Draw bin values
+            ctx.fillStyle = '#FFC107'; // Brighter color for values
+            ctx.font = `bold ${14 * scale}px "Comic Sans MS", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            
+            for (let i = 0; i < bins.length - 1; i++) {
+                const midX = (bins[i].x + bins[i+1].x) / 2;
+                
+                // Add a small background for better visibility
+                const valueText = config.holeValues[i];
+                const textWidth = ctx.measureText(valueText).width;
+                const textHeight = 14 * scale;
+                const padding = 4 * scale;
+                
+                ctx.fillStyle = 'rgba(59, 39, 35, 0.7)'; // Semi-transparent background
+                ctx.fillRect(
+                    midX - textWidth/2 - padding, 
+                    bins[0].y - textHeight - padding*2, 
+                    textWidth + padding*2, 
+                    textHeight + padding
+                );
+                
+                // Draw value text
+                ctx.fillStyle = '#FFC107';
+                ctx.fillText(valueText, midX, bins[0].y - 5 * scale);
+            }
+            
+            // Draw balls with shine effect
+            for (const ball of balls) {
+                // Base ball
+                ctx.fillStyle = config.ballColor;
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Add shine effect
+                const ballGradient = ctx.createRadialGradient(
+                    ball.x - ball.radius / 2.5, ball.y - ball.radius / 2.5,
+                    ball.radius / 10,
+                    ball.x, ball.y,
+                    ball.radius
+                );
+                ballGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                ballGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+                ballGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.fillStyle = ballGradient;
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Debug: Draw indicator for stuck balls
+                if (ball.stuckFrames > 15) {
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, ball.radius + 4, 0, Math.PI * 2);
+                    ctx.stroke();
                 }
             }
         }
-        
-        function resetGame() {
-            // Prevent multiple reset calls
-            if (isResetting) return;
-            isResetting = true;
-            
-            // Stop all animations first
-            stopAllAnimations();
-            
-            // Reset game state
-            score = 0;
-            ballsLeft = config.startingBalls;
-            gameRunning = true;
-            
-            // Update displays
-            scoreDisplay.textContent = '0';
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Remove game-over state
-            const scoreContainer = document.querySelector('.score');
-            scoreContainer.classList.remove('game-over');
-            
-            // Hide overlay
-            if (gameOverlay) {
-                gameOverlay.style.display = 'none';
-            }
-            
-            // Close any open popups
-            if (activePopup) {
-                activePopup.remove();
-                activePopup = null;
-            }
-            
-            // Store original canvas dimensions
-            const originalWidth = canvas.width;
-            const originalHeight = canvas.height;
-            
-            // Save the engine's gravity
-            const originalGravity = engine.gravity.y;
-            
-            // Completely destroy the old engine and create a new one
-            Matter.Engine.clear(engine);
-            Matter.Render.stop(render);
-            Matter.Runner.stop(engine);
-            
-            // Create a fresh engine
-            engine = Matter.Engine.create({
-                enableSleeping: true
-            });
-            world = engine.world;
-            engine.gravity.y = originalGravity;
-            
-            // Reset arrays
-            pegs = [];
-            walls = [];
-            balls = [];
-            bucketBodies = [];
-            
-            // Reset and restart the renderer with exact same dimensions
-            render.engine = engine;
-            render.options.width = originalWidth;
-            render.options.height = originalHeight;
-            render.canvas.width = originalWidth;
-            render.canvas.height = originalHeight;
-            Matter.Render.run(render);
-            
-            // Start a new runner
-            const runner = Matter.Runner.create({
-                isFixed: true, 
-                delta: 16
-            });
-            Matter.Runner.run(runner, engine);
-            
-            // Reconnect collision handler
-            Matter.Events.on(engine, 'collisionStart', handleCollision);
-            
-            // Rebuild the game elements with a slight delay
-            setTimeout(() => {
-                createBoundaries();
-                createPegs();
-                createBuckets();
-                
-                // Update bucket display
-                updateBucketDisplay();
-                
-                // Reset particles
-                initBaseEmbers();
-                
-                // Allow reset again
-                isResetting = false;
-            }, 100);
+
+        // Game loop
+        function gameLoop() {
+            updateBalls();
+            drawGame();
+            animationId = requestAnimationFrame(gameLoop);
         }
-        
-        function applyConfigChanges() {
-            // Save old values
-            const oldRows = config.rows;
-            const oldColumns = config.columns;
-            const oldBuckets = config.buckets;
-            
-            // Get values from inputs
-            config.rows = parseInt(document.getElementById('rows-input').value);
-            config.columns = parseInt(document.getElementById('columns-input').value);
-            config.buckets = parseInt(document.getElementById('buckets-input').value);
-            config.ballSize = parseInt(document.getElementById('ball-size-input').value);
-            config.restitution = parseFloat(document.getElementById('restitution-input').value);
-            config.gravity = parseFloat(document.getElementById('gravity-input').value);
-            config.startingBalls = parseInt(document.getElementById('balls-input').value);
-            config.scoreLabel = document.getElementById('score-label-input').value;
-            config.gameTitle = document.getElementById('game-title-input').value;
-            
-            // Update displays
-            scoreLabel.textContent = config.scoreLabel;
-            gameTitle.textContent = config.gameTitle;
-            
-            // Set balls left to new value
-            ballsLeft = config.startingBalls;
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Update gravity
-            engine.gravity.y = config.gravity;
-            
-            // If the layout has changed, rebuild the board
-            if (oldRows !== config.rows || oldColumns !== config.columns || oldBuckets !== config.buckets) {
-                // Generate new bucket values if there's a bucket count change
-                if (oldBuckets !== config.buckets) {
-                    config.bucketValues = []; // Clear values to force regeneration
-                    generateBucketValues();
-                }
+
+        // Event Listeners
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            createPegsAndBins();
+        });
+
+        multiplierBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Don't check for disabled since we're not disabling buttons anymore
                 
-                // Stop all animations and cleanup
-                stopAllAnimations();
+                // Update active state
+                multiplierBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
                 
-                resetGame();
-            } else {
-                updateBucketDisplay();
-            }
-            
-            // Close config panel
-            editMode = false;
-            configPanel.style.display = 'none';
-            editModeBtn.classList.remove('active');
-            editModeBtn.textContent = 'Edit Mode';
-            updateBucketDisplay();
-        }
-        
-        function handleResize() {
-            // Store current game state to restore after resize
-            const currentScore = score;
-            const currentBallsLeft = ballsLeft;
-            
-            // Only update dimensions, don't change the game properties
-            canvas.width = canvasContainer.offsetWidth;
-            canvas.height = canvasContainer.offsetHeight;
-            
-            particlesCanvas.width = canvasContainer.offsetWidth;
-            particlesCanvas.height = canvasContainer.offsetHeight;
-            
-            // Properly clean up the old engine
-            Matter.Engine.clear(engine);
-            Matter.Render.stop(render);
-            
-            // Set up new engine with same settings
-            engine = Matter.Engine.create({
-                enableSleeping: true
+                // Get requested multiplier
+                const requestedMultiplier = parseInt(this.dataset.multiplier);
+                
+                // Use as many balls as we have left, up to the requested multiplier
+                config.currentMultiplier = Math.min(requestedMultiplier, config.ballsRemaining);
+                
+                // Drop the balls
+                dropMultipleBalls(config.currentMultiplier);
             });
-            world = engine.world;
-            engine.gravity.y = config.gravity;
+        });
+
+        editConfigBtn.addEventListener('click', () => {
+            config.editMode = !config.editMode;
+            configPanel.classList.toggle('open', config.editMode);
+            editConfigBtn.classList.toggle('active', config.editMode);
+            editConfigBtn.textContent = config.editMode ? 'Close Editor' : 'Edit Mode';
             
-            // Update render with new engine and exact dimensions
-            render.engine = engine;
-            render.options.width = canvas.width;
-            render.options.height = canvas.height;
-            render.canvas.width = canvas.width;
-            render.canvas.height = canvas.height;
+            // Update input values
+            gameTitleInput.value = config.gameTitle;
+            scorePrefixInput.value = config.scorePrefix;
+            numRowsInput.value = config.rows;
+            numRowsValue.textContent = config.rows;
+            ballSizeInput.value = config.ballSize;
+            ballSizeValue.textContent = config.ballSize;
+            pegSizeInput.value = config.pegSize;
+            pegSizeValue.textContent = config.pegSize;
+            pegBouncinessInput.value = config.pegBounciness;
+            pegBouncinessValue.textContent = config.pegBounciness;
+            maxBallsInput.value = config.maxBalls;
             
-            // Set proper pixel ratio
-            Matter.Render.setPixelRatio(render, window.devicePixelRatio);
-            
-            // Restart the renderer
-            Matter.Render.run(render);
-            
-            // Start a new runner
-            const runner = Matter.Runner.create({
-                isFixed: true,
-                delta: 16
-            });
-            Matter.Runner.run(runner, engine);
-            
-            // Reconnect collision handler
-            Matter.Events.on(engine, 'collisionStart', handleCollision);
-            
-            // Reset arrays
-            pegs = [];
-            walls = [];
-            balls = [];
-            bucketBodies = [];
-            
-            // Rebuild the game elements
-            createBoundaries();
-            createPegs();
-            createBuckets();
-            
-            // Restore game state
-            score = currentScore;
-            ballsLeft = currentBallsLeft;
-            scoreDisplay.textContent = formatNumber(score);
-            ballsLeftDisplay.textContent = ballsLeft;
-            
-            // Reset particles
-            particles = [];
-            initBaseEmbers();
-        }
-        
-        // Prevent scrolling when touching only the game elements, but allow outside
-        function preventScrolling() {
-            const gameElements = [
-                document.querySelector('.game-container'),
-                document.getElementById('plinko-canvas'),
-                document.getElementById('particles-canvas')
-            ];
-            
-            // Add more specific touch event handling
-            gameElements.forEach(element => {
-                if (element) {
-                    element.addEventListener('touchmove', e => {
-                        // Only prevent default within the game container
-                        e.preventDefault();
-                    }, { passive: false });
+            // Select current color options
+            document.querySelectorAll('#ball-color-picker .color-option').forEach(option => {
+                if (option.dataset.color === config.ballColor) {
+                    option.style.border = '2px solid white';
+                } else {
+                    option.style.border = '2px solid rgba(255, 255, 255, 0.2)';
                 }
             });
             
-            // Allow body to scroll normally
-            document.body.style.overflow = 'auto';
-            document.body.style.overscrollBehavior = 'auto';
-            
-            // Prevent double-tap zoom only within game elements
-            gameElements.forEach(element => {
-                if (element) {
-                    element.addEventListener('touchend', e => {
-                        const now = Date.now();
-                        const lastTouch = element.lastTouch || now - 1000;
-                        const delta = now - lastTouch;
-                        if (delta < 300) {
-                            e.preventDefault();
-                        }
-                        element.lastTouch = now;
-                    }, { passive: false });
+            document.querySelectorAll('#peg-color-picker .color-option').forEach(option => {
+                if (option.dataset.color === config.pegColor) {
+                    option.style.border = '2px solid white';
+                } else {
+                    option.style.border = '2px solid rgba(255, 255, 255, 0.2)';
                 }
             });
-        }
+        });
+
+        saveConfigBtn.addEventListener('click', () => {
+            // Update configuration
+            config.gameTitle = gameTitleInput.value;
+            config.scorePrefix = scorePrefixInput.value;
+            config.rows = parseInt(numRowsInput.value);
+            config.ballSize = parseInt(ballSizeInput.value);
+            config.pegSize = parseInt(pegSizeInput.value);
+            config.pegBounciness = parseFloat(pegBouncinessInput.value);
+            config.maxBalls = parseInt(maxBallsInput.value);
+            
+            // Update remaining balls if needed
+            if (config.ballsRemaining > config.maxBalls) {
+                config.ballsRemaining = config.maxBalls;
+            }
+            
+            // Ensure hole values array has the right length
+            while (config.holeValues.length < config.rows) {
+                config.holeValues.push('100B');
+            }
+            if (config.holeValues.length > config.rows) {
+                config.holeValues = config.holeValues.slice(0, config.rows);
+            }
+            
+            // Resize and update game
+            resizeCanvas();
+            createPegsAndBins();
+            updateUI();
+            
+            // Reset edit mode
+            config.editMode = false;
+            configPanel.classList.remove('open');
+            editConfigBtn.classList.remove('active');
+            editConfigBtn.textContent = 'Edit Mode';
+        });
+
+        cancelConfigBtn.addEventListener('click', () => {
+            config.editMode = false;
+            configPanel.classList.remove('open');
+            editConfigBtn.classList.remove('active');
+            editConfigBtn.textContent = 'Edit Mode';
+        });
+
+        numRowsInput.addEventListener('input', function() {
+            numRowsValue.textContent = this.value;
+        });
+
+        ballSizeInput.addEventListener('input', function() {
+            ballSizeValue.textContent = this.value;
+        });
+
+        pegSizeInput.addEventListener('input', function() {
+            pegSizeValue.textContent = this.value;
+        });
         
-        function setupInputHandlers() {
-            // Edit mode toggle
-            editModeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                editMode = !editMode;
-                configPanel.style.display = editMode ? 'block' : 'none';
-                editModeBtn.classList.toggle('active', editMode);
-                editModeBtn.textContent = editMode ? 'Close Editor' : 'Edit Mode';
-                
-                // Update bucket display to show which are editable
-                updateBucketDisplay();
+        pegBouncinessInput.addEventListener('input', function() {
+            pegBouncinessValue.textContent = this.value;
+        });
+        
+        pegBounceCustomInput.addEventListener('input', function() {
+            pegBounceCustomValue.textContent = this.value;
+        });
+
+        saveHoleValueBtn.addEventListener('click', saveBinValue);
+        cancelHoleValueBtn.addEventListener('click', closeBinEditor);
+
+        savePegPropertiesBtn.addEventListener('click', savePegProperties);
+        cancelPegPropertiesBtn.addEventListener('click', closePegEditor);
+
+        // Listen for Enter key in hole value input
+        holeValueInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                saveBinValue();
+            }
+        });
+
+        // Canvas click event for bin and peg editing
+        canvas.addEventListener('click', function(e) {
+            if (!config.editMode) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            
+            // Check for bin click
+            const binIndex = checkBinClick(x, y);
+            if (binIndex >= 0) {
+                openBinEditor(binIndex);
+                return;
+            }
+            
+            // Check for peg click
+            const peg = checkPegClick(x, y);
+            if (peg) {
+                openPegEditor(peg);
+                return;
+            }
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', resetGame);
+        
+        // Play again button in final score overlay
+        playAgainBtn.addEventListener('click', resetGame);
+
+        // Sound toggle
+        soundToggle.addEventListener('change', function() {
+            config.soundEnabled = this.checked;
+        });
+
+        // Set up color pickers for ball and peg
+        function setupColorPickers() {
+            // Ball color picker
+            document.querySelectorAll('#ball-color-picker .color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const color = this.dataset.color;
+                    config.ballColor = color;
+                    
+                    // Visual feedback
+                    document.querySelectorAll('#ball-color-picker .color-option').forEach(o => {
+                        o.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+                    });
+                    this.style.border = '2px solid white';
+                });
             });
             
-            // Apply configuration changes
-            applyBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                applyConfigChanges();
+            // Default peg color picker
+            document.querySelectorAll('#peg-color-picker .color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const color = this.dataset.color;
+                    config.pegColor = color;
+                    
+                    // Visual feedback
+                    document.querySelectorAll('#peg-color-picker .color-option').forEach(o => {
+                        o.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+                    });
+                    this.style.border = '2px solid white';
+                });
             });
             
-            // Reset game button
-            resetBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                resetGame();
+            // Custom peg color picker in peg editor
+            document.querySelectorAll('#custom-peg-color-picker .color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    customPegColor = this.dataset.color;
+                    
+                    // Visual feedback
+                    document.querySelectorAll('#custom-peg-color-picker .color-option').forEach(o => {
+                        o.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+                    });
+                    this.style.border = '2px solid white';
+                });
             });
+        }
+
+        // Start a continuous drop of balls with mouse/touch hold
+        function startContinuousDrop() {
+            if (dropInterval || config.ballsRemaining <= 0) return;
             
-            // Drop button - for both mouse and touch events
+            // Resume AudioContext if suspended
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            dropBall(); // Drop first ball immediately
+            
+            dropInterval = setInterval(() => {
+                if (config.ballsRemaining > 0) {
+                    dropBall();
+                } else {
+                    stopContinuousDrop();
+                }
+            }, 200);
+        }
+
+        function stopContinuousDrop() {
+            if (dropInterval) {
+                clearInterval(dropInterval);
+                dropInterval = null;
+            }
+        }
+
+        // Set default active multiplier
+        document.querySelector('.multiplier-btn[data-multiplier="1"]').classList.add('active');
+
+        // Initialize the game on load
+        window.addEventListener('load', () => {
+            initGame();
+            setupColorPickers();
+            
+            // Add event listeners for continuous drop on x1 button
+            const dropBtn = document.querySelector('.multiplier-btn[data-multiplier="1"]');
+            
             const handleDropStart = (e) => {
                 e.preventDefault();
-                if (audioContext) {
-                    // Resume audio context if suspended (needed for mobile)
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                } else {
-                    initAudio();
-                }
                 startContinuousDrop();
             };
             
@@ -2050,310 +2118,12 @@
             dropBtn.addEventListener('touchend', handleDropEnd, { passive: false });
             dropBtn.addEventListener('touchcancel', handleDropEnd, { passive: false });
             
-            // Multiple drop buttons with proper touch handling
-            const setupDropButton = (btn, amount) => {
-                const dropHandler = (e) => {
-                    e.preventDefault();
-                    // Resume audio context if needed
-                    if (audioContext && audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                    dropMultipleBalls(amount);
-                };
-                
-                btn.addEventListener('click', dropHandler);
-                btn.addEventListener('touchend', dropHandler, { passive: false });
-            };
-            
-            setupDropButton(drop5xBtn, 5);
-            setupDropButton(drop10xBtn, 10);
-            setupDropButton(drop50xBtn, 50);
-            setupDropButton(drop100xBtn, 100);
-            
-            // Bucket click/touch handlers for editing values
-            const bucketClickHandler = (e) => {
-                const bucket = e.target.closest('.bucket');
-                if (bucket && editMode && bucket.classList.contains('edit-bucket')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showBucketEditPopup(bucket);
-                }
-            };
-            
-            document.addEventListener('click', bucketClickHandler);
-            document.addEventListener('touchend', bucketClickHandler, { passive: false });
-            
-            // Sound toggle
-            const soundToggle = document.getElementById('sound-toggle');
-            if (soundToggle) {
-                soundToggle.addEventListener('change', () => {
-                    config.soundEnabled = soundToggle.checked;
-                });
-            }
-            
-            // Game overlay click for reset after game over
-            if (gameOverlay) {
-                const gameOverHandler = (e) => {
-                    e.preventDefault();
-                    if (!gameRunning) {
-                        resetGame();
-                    }
-                };
-                
-                gameOverlay.addEventListener('click', gameOverHandler);
-                gameOverlay.addEventListener('touchend', gameOverHandler, { passive: false });
-            }
-            
-            // Color pickers
-            setupColorPickers();
-        }
-        
-        function setupColorPickers() {
-            const pegColorOptions = document.querySelectorAll('#peg-color-picker .color-option');
-            pegColorOptions.forEach(option => {
-                const colorSelectHandler = (e) => {
-                    e.preventDefault();
-                    const color = option.dataset.color;
-                    config.pegColor = color;
-                    
-                    // Update all pegs
-                    pegs.forEach(peg => {
-                        peg.render.fillStyle = color;
-                        peg.originalColor = color;
-                    });
-                    
-                    // Visual feedback
-                    pegColorOptions.forEach(o => o.style.border = '2px solid rgba(255, 255, 255, 0.2)');
-                    option.style.border = '2px solid white';
-                };
-                
-                option.addEventListener('click', colorSelectHandler);
-                option.addEventListener('touchend', colorSelectHandler, { passive: false });
-                
-                // Set initial selection
-                if (option.dataset.color === config.pegColor) {
-                    option.style.border = '2px solid white';
-                }
-            });
-            
-            const ballColorOptions = document.querySelectorAll('#ball-color-picker .color-option');
-            ballColorOptions.forEach(option => {
-                const colorSelectHandler = (e) => {
-                    e.preventDefault();
-                    config.ballColor = option.dataset.color;
-                    
-                    // Visual feedback
-                    ballColorOptions.forEach(o => o.style.border = '2px solid rgba(255, 255, 255, 0.2)');
-                    option.style.border = '2px solid white';
-                };
-                
-                option.addEventListener('click', colorSelectHandler);
-                option.addEventListener('touchend', colorSelectHandler, { passive: false });
-                
-                // Set initial selection
-                if (option.dataset.color === config.ballColor) {
-                    option.style.border = '2px solid white';
-                }
-            });
-        }
-        
-        function updateParticles() {
-            // Don't update particles during reset
-            if (isResetting) {
-                // Request another frame when not resetting
-                requestAnimationFrame(updateParticles);
-                return;
-            }
-            
-            // Clear canvas
-            particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
-            
-            // Update and draw base embers
-            for (let i = 0; i < baseEmbers.length; i++) {
-                const ember = baseEmbers[i];
-                
-                ember.x += ember.velocity.x;
-                ember.y += ember.velocity.y;
-                ember.life++;
-                
-                // If ember is dead, reset it at the bottom
-                if (ember.life >= ember.maxLife) {
-                    ember.x = Math.random() * canvas.width;
-                    ember.y = canvas.height - Math.random() * 10;
-                    ember.velocity.y = -0.5 - Math.random() * 1.5;
-                    ember.life = 0;
-                    ember.maxLife = 100 + Math.random() * 100;
-                }
-                
-                // Calculate alpha based on life
-                const alpha = 1 - ember.life / ember.maxLife;
-                
-                // Draw ember
-                particlesCtx.beginPath();
-                particlesCtx.arc(ember.x, ember.y, ember.radius, 0, Math.PI * 2);
-                particlesCtx.fillStyle = ember.color.replace(/[\d\.]+\)$/g, `${alpha})`);
-                particlesCtx.fill();
-            }
-            
-            // Update and draw explosion particles
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                
-                p.x += p.velocity.x;
-                p.y += p.velocity.y;
-                p.velocity.y += p.gravity || 0.15; // Stronger gravity for faster fall
-                p.life++;
-                
-                // Remove dead particles
-                if (p.life >= p.maxLife) {
-                    particles.splice(i, 1);
-                    continue;
-                }
-                
-                // Calculate alpha based on life
-                const alpha = 1 - p.life / p.maxLife;
-                
-                // Draw particle
-                particlesCtx.beginPath();
-                particlesCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                particlesCtx.fillStyle = p.color.replace(/[\d\.]+\)$/g, `${alpha})`);
-                particlesCtx.fill();
-            }
-            
-            // Continue animation loop
-            requestAnimationFrame(updateParticles);
-        }
-        
-        // Initialize base embers
-        function initBaseEmbers() {
-            baseEmbers = [];
-            const numEmbers = 15;
-            
-            for (let i = 0; i < numEmbers; i++) {
-                baseEmbers.push({
-                    x: Math.random() * canvas.width,
-                    y: canvas.height - Math.random() * 30,
-                    radius: 2 + Math.random() * 3,
-                    color: getEmberColor(Math.random()),
-                    velocity: { x: (Math.random() - 0.5) * 0.5, y: -0.5 - Math.random() * 1.5 },
-                    life: 0,
-                    maxLife: 100 + Math.random() * 100
-                });
-            }
-        }
-        
-        function getEmberColor(t) {
-            // Colors from orange-yellow to red
-            const colors = [
-                { r: 255, g: 107, b: 53 },  // Orange
-                { r: 255, g: 140, b: 85 },  // Light orange
-                { r: 255, g: 69, b: 0 },    // Red-orange
-                { r: 255, g: 177, b: 31 }   // Yellow-orange
-            ];
-            
-            const index = Math.floor(t * colors.length);
-            const color = colors[Math.min(index, colors.length - 1)];
-            
-            return `rgba(${color.r}, ${color.g}, ${color.b}, ${0.7 + Math.random() * 0.3})`;
-        }
-        
-        function createEmberExplosion(bucketIndex) {
-            const bucketWidth = canvas.width / config.buckets;
-            const x = bucketIndex * bucketWidth + bucketWidth / 2;
-            const y = canvas.height - 30;
-            
-            // Calculate middle bucket index
-            const middleIndex = Math.floor((config.buckets - 1) / 2);
-            const isMiddle = bucketIndex === middleIndex;
-            const isAdjacent = Math.abs(bucketIndex - middleIndex) === 1;
-            
-            // Number of particles based on bucket position
-            let numParticles = 10; // Default for regular buckets
-            
-            if (isMiddle) {
-                numParticles = 40; // Many particles for middle
-            } else if (isAdjacent) {
-                numParticles = 25; // More particles for adjacent
-            }
-            
-            // Apply particle intensity multiplier
-            numParticles = Math.round(numParticles * config.particleIntensity);
-            
-            // Create particles
-            for (let i = 0; i < numParticles; i++) {
-                // Most particles go up, fewer to the sides
-                const angle = (Math.random() * Math.PI * 1.5) - (Math.PI * 0.75);
-                
-                // Higher initial velocity for center/adjacent buckets
-                const speed = isMiddle ? 3 + Math.random() * 2 : 
-                             isAdjacent ? 2 + Math.random() * 2 : 
-                             1 + Math.random() * 2;
-                
-                particles.push({
-                    x,
-                    y,
-                    radius: 2 + Math.random() * 3,
-                    color: getEmberColor(Math.random()),
-                    velocity: {
-                        x: Math.cos(angle) * speed,
-                        // Upward initial velocity, will be affected by gravity
-                        y: Math.sin(angle) * speed - (isMiddle ? 3 : isAdjacent ? 2 : 1)
-                    },
-                    gravity: 0.15 + Math.random() * 0.1, // Stronger gravity for faster fall
-                    life: 0,
-                    // Longer max life for middle bucket particles
-                    maxLife: isMiddle ? 40 + Math.random() * 40 : 
-                             isAdjacent ? 30 + Math.random() * 30 : 
-                             20 + Math.random() * 20,
-                    alphaFade: 0.03 + Math.random() * 0.05
-                });
-            }
-        }
-        
-        // Initialize game when window is loaded
-        window.addEventListener('load', () => {
-            // Set fixed dimensions for the game container to ensure consistent physics
-            const gameContainer = document.querySelector('.game-container');
-            const canvasContainer = document.getElementById('canvas-container');
-            
-            // Make sure canvas dimensions are consistent
-            if (canvas) {
-                canvas.width = 800; // Match the container width in CSS
-                canvas.height = 600;
-            }
-            
-            if (particlesCanvas) {
-                particlesCanvas.width = 800;
-                particlesCanvas.height = 600;
-            }
-            
-            // Initialize game
-            initGame();
-            
-            // Update input min/max values based on config
-            document.getElementById('rows-input').min = 5;
-            document.getElementById('rows-input').max = 20;
-            document.getElementById('rows-input').value = config.rows;
-            
-            document.getElementById('columns-input').min = 5;
-            document.getElementById('columns-input').max = 20;
-            document.getElementById('columns-input').value = config.columns;
-            
-            document.getElementById('buckets-input').min = 5;
-            document.getElementById('buckets-input').max = 15;
-            document.getElementById('buckets-input').value = config.buckets;
-            
-            // Prevent scrolling on touch devices
-            preventScrolling();
-            
-            // For mobile, add a click/touch handler to initialize audio on first interaction
-            document.body.addEventListener('click', function initAudioOnFirstInteraction() {
+            // Handle resume of audio context on first interaction
+            document.body.addEventListener('click', function initAudioOnInteraction() {
                 if (audioContext && audioContext.state === 'suspended') {
                     audioContext.resume();
-                } else if (!audioContext) {
-                    initAudio();
                 }
-                document.body.removeEventListener('click', initAudioOnFirstInteraction);
+                document.body.removeEventListener('click', initAudioOnInteraction);
             }, { once: true });
         });
     </script>
