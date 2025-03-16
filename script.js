@@ -83,9 +83,9 @@ const config = {
     binMultiplier: 1, // Default 1x multiplier
     originalHoleValues: [], // Store original values before multiplication
     physics: {
-        gravity: 0.114,      // Reduced gravity by 5% for slightly slower ball fall
-        bounce: 0.65,        // Reduced bounce coefficient to prevent edge shooting
-        friction: 0.99       // Reduced friction to maintain momentum better
+        gravity: 0.1,      
+        bounce: 0.7,        
+        friction: 0.99
     },
     globalBounciness: 0.8   // Global bounce setting (can be configured)
 };
