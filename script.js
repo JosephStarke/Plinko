@@ -84,7 +84,7 @@ const config = {
     originalHoleValues: [], // Store original values before multiplication
     physics: {
         gravity: 0.1,      
-        bounce: 0.7,        
+        bounce: 0.68,        
         friction: 0.99
     },
     globalBounciness: 0.8   // Global bounce setting (can be configured)
